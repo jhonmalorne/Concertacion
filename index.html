@@ -3,1511 +3,1103 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Concertación Ciudadana — La plataforma ciudadana para reconstruir Venezuela desde cada estado, municipio y parroquia.">
+<meta name="description" content="Concertación Ciudadana — Hacia la libertad, el orden y el bienestar integral de Venezuela.">
 <meta name="theme-color" content="#0047AB">
 <title>Concertación Ciudadana | Venezuela</title>
 
-<!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<!-- Leaflet -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-/* ==================== ROOT VARIABLES ==================== */
+/* ===== VARIABLES ===== */
 :root {
   --azul: #0047AB;
-  --azul-dark: #003080;
-  --azul-light: #1A6FE0;
-  --azul-pale: #E8F0FE;
+  --azul-dk: #003380;
+  --azul-lt: #1A6AE0;
+  --azul-pal: #EAF1FD;
   --verde: #5CCB3B;
-  --verde-dark: #3DA820;
-  --verde-pale: #EDFAE7;
+  --verde-dk: #3DA820;
+  --verde-pal: #EDFAE8;
   --blanco: #FFFFFF;
-  --gris-100: #F8F9FC;
-  --gris-200: #EEF1F7;
-  --gris-300: #D4DAEB;
-  --gris-600: #6B7594;
-  --gris-800: #1E2A4A;
-  --texto: #0D1B3E;
-  --sombra-azul: 0 20px 60px rgba(0,71,171,0.15);
-  --sombra-card: 0 4px 24px rgba(0,0,0,0.08);
-  --radio: 16px;
-  --radio-xl: 28px;
-  --font-display: 'Montserrat', sans-serif;
-  --font-body: 'Poppins', sans-serif;
-  --font-ui: 'Inter', sans-serif;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --gris-50: #F8FAFC;
+  --gris-100: #F1F4F9;
+  --gris-200: #E2E8F0;
+  --gris-400: #94A3B8;
+  --gris-600: #64748B;
+  --gris-800: #1E293B;
+  --negro: #0D1B3E;
+  --font-h: 'Montserrat', sans-serif;
+  --font-b: 'Poppins', sans-serif;
+  --ease: cubic-bezier(.4,0,.2,1);
+  --t: all .3s var(--ease);
+  --r: 16px;
+  --rl: 24px;
+  --sh: 0 8px 40px rgba(0,71,171,.12);
+  --sh2: 0 4px 20px rgba(0,0,0,.07);
 }
 
-/* ==================== RESET & BASE ==================== */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--font-body);
-  color: var(--texto);
-  background: var(--blanco);
-  overflow-x: hidden;
-  cursor: default;
-}
-img { max-width: 100%; height: auto; display: block; }
-a { text-decoration: none; color: inherit; }
-button { cursor: pointer; font-family: var(--font-body); border: none; outline: none; }
+/* ===== RESET ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font-b);color:var(--negro);background:var(--blanco);overflow-x:hidden}
+img{max-width:100%;height:auto;display:block}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:var(--font-b);border:none;outline:none;background:none}
 
-/* ==================== LOADER ==================== */
-#loader {
-  position: fixed; inset: 0; z-index: 9999;
-  background: var(--blanco);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  transition: opacity 0.5s ease, visibility 0.5s ease;
+/* ===== LOADER ===== */
+#loader{
+  position:fixed;inset:0;z-index:9999;background:var(--blanco);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .6s ease,visibility .6s ease;
 }
-#loader.hidden { opacity: 0; visibility: hidden; }
-.loader-logo {
-  display: flex; align-items: flex-end; gap: 4px;
-  margin-bottom: 24px;
-}
-.loader-bar {
-  background: linear-gradient(180deg, var(--verde), var(--azul));
-  border-radius: 4px;
-  animation: loaderPulse 1.2s ease infinite;
-}
-.loader-bar:nth-child(1) { width: 10px; height: 20px; animation-delay: 0s; }
-.loader-bar:nth-child(2) { width: 10px; height: 32px; animation-delay: 0.15s; }
-.loader-bar:nth-child(3) { width: 10px; height: 44px; animation-delay: 0.3s; }
-@keyframes loaderPulse {
-  0%, 100% { opacity: 1; transform: scaleY(1); }
-  50% { opacity: 0.5; transform: scaleY(0.8); }
-}
-.loader-text {
-  font-family: var(--font-display);
-  font-weight: 800; font-size: 18px;
-  color: var(--azul); letter-spacing: 4px;
-  text-transform: uppercase;
-}
-.loader-sub { font-size: 12px; color: var(--gris-600); margin-top: 6px; }
-.loader-progress {
-  margin-top: 24px;
-  width: 160px; height: 3px;
-  background: var(--gris-200); border-radius: 3px; overflow: hidden;
-}
-.loader-progress-bar {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--azul), var(--verde));
-  border-radius: 3px;
-  animation: loadProgress 1.8s ease forwards;
-}
-@keyframes loadProgress { to { width: 100%; } }
+#loader.out{opacity:0;visibility:hidden;pointer-events:none}
+.ld-logo-img{width:140px;margin-bottom:28px;animation:ld-bounce 1.4s ease infinite}
+@keyframes ld-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.ld-text{font-family:var(--font-h);font-weight:800;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--azul);margin-bottom:24px}
+.ld-bar{width:180px;height:3px;background:var(--gris-200);border-radius:3px;overflow:hidden}
+.ld-fill{height:100%;width:0;background:linear-gradient(90deg,var(--azul),var(--verde));border-radius:3px;animation:ld-fill 1.9s ease forwards}
+@keyframes ld-fill{to{width:100%}}
 
-/* ==================== NAVBAR ==================== */
-#navbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
-  padding: 0 40px;
-  height: 72px;
-  display: flex; align-items: center; justify-content: space-between;
-  transition: var(--transition);
+/* ===== NAVBAR ===== */
+#nav{
+  position:fixed;top:0;left:0;right:0;z-index:900;
+  height:70px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px;transition:var(--t);
 }
-#navbar.transparent { background: transparent; }
-#navbar.solid {
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 4px 24px rgba(0,71,171,0.06);
+#nav.clear{background:transparent}
+#nav.solid{
+  background:rgba(255,255,255,.97);
+  backdrop-filter:blur(24px);
+  box-shadow:0 1px 0 var(--gris-200),0 4px 24px rgba(0,71,171,.06);
 }
-.nav-logo {
-  display: flex; align-items: center; gap: 10px;
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-brand-logo{height:40px;width:auto;filter:brightness(0) invert(1);transition:var(--t)}
+#nav.solid .nav-brand-logo{filter:none}
+.nav-links{display:flex;align-items:center;gap:4px}
+.nl{
+  font-size:13px;font-weight:500;padding:8px 13px;border-radius:8px;
+  color:rgba(255,255,255,.85);transition:var(--t);letter-spacing:.2px;
 }
-.nav-logo-bars { display: flex; align-items: flex-end; gap: 3px; }
-.nav-logo-bar {
-  background: linear-gradient(180deg, var(--verde), var(--azul));
-  border-radius: 3px;
-  transition: var(--transition);
+#nav.solid .nl{color:var(--gris-600)}
+.nl:hover{color:var(--verde);background:rgba(255,255,255,.08)}
+#nav.solid .nl:hover{color:var(--azul);background:var(--azul-pal)}
+.nl-cta{
+  background:var(--verde);color:var(--blanco)!important;
+  padding:9px 20px!important;border-radius:10px;font-weight:700!important;
+  box-shadow:0 4px 16px rgba(92,203,59,.35);
 }
-.nlb1 { width: 7px; height: 12px; }
-.nlb2 { width: 7px; height: 18px; }
-.nlb3 { width: 7px; height: 24px; }
-.nav-logo-text {
-  font-family: var(--font-display);
-  font-weight: 800; font-size: 16px;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--blanco);
-  transition: var(--transition);
-}
-#navbar.solid .nav-logo-text { color: var(--azul); }
-.nav-links {
-  display: flex; align-items: center; gap: 6px;
-}
-.nav-link {
-  font-size: 13px; font-weight: 500;
-  color: rgba(255,255,255,0.85);
-  padding: 8px 14px; border-radius: 8px;
-  transition: var(--transition);
-  letter-spacing: 0.3px;
-}
-#navbar.solid .nav-link { color: var(--gris-600); }
-.nav-link:hover { color: var(--verde); background: rgba(255,255,255,0.08); }
-#navbar.solid .nav-link:hover { color: var(--azul); background: var(--azul-pale); }
-.nav-cta {
-  background: var(--verde);
-  color: var(--blanco) !important;
-  padding: 9px 20px !important;
-  border-radius: 10px !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 16px rgba(92,203,59,0.35);
-  transition: var(--transition) !important;
-}
-.nav-cta:hover { background: var(--verde-dark) !important; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(92,203,59,0.45) !important; }
-.hamburger {
-  display: none; flex-direction: column; gap: 5px;
-  background: none; padding: 8px;
-}
-.hamburger span {
-  display: block; width: 24px; height: 2px;
-  background: var(--blanco); border-radius: 2px;
-  transition: var(--transition);
-}
-#navbar.solid .hamburger span { background: var(--azul); }
+.nl-cta:hover{background:var(--verde-dk)!important;transform:translateY(-1px);box-shadow:0 6px 22px rgba(92,203,59,.5)!important}
+.hamburger{display:none;flex-direction:column;gap:5px;padding:8px}
+.hamburger span{display:block;width:24px;height:2px;background:var(--blanco);border-radius:2px;transition:var(--t)}
+#nav.solid .hamburger span{background:var(--azul)}
 
-/* ==================== HERO ==================== */
-#hero {
-  position: relative;
-  height: 100vh; min-height: 700px;
-  display: flex; align-items: center;
-  overflow: hidden;
+/* ===== MOBILE NAV ===== */
+#mnav{
+  position:fixed;inset:0;z-index:950;
+  background:rgba(0,30,85,.97);backdrop-filter:blur(20px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  transform:translateX(100%);transition:transform .42s var(--ease);
 }
-.hero-bg {
-  position: absolute; inset: 0;
-  background-image: url('https://github.com/jhonmalorne/Concertacion/blob/main/561569243_18531223561001009_1410951617980685524_n.jpg?raw=true');
-  background-size: cover; background-position: center top;
-  transform: scale(1.05);
-  animation: heroBgZoom 20s ease infinite alternate;
+#mnav.open{transform:translateX(0)}
+.mnav-close{
+  position:absolute;top:22px;right:22px;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.1);color:var(--blanco);
+  font-size:22px;display:flex;align-items:center;justify-content:center;
+  transition:var(--t);
 }
-@keyframes heroBgZoom {
-  from { transform: scale(1.05); }
-  to { transform: scale(1.12); }
+.mnav-close:hover{background:rgba(255,255,255,.2);transform:rotate(90deg)}
+.mnav-link{
+  font-family:var(--font-h);font-size:28px;font-weight:800;
+  color:var(--blanco);text-transform:uppercase;letter-spacing:2px;
+  padding:10px 28px;border-radius:10px;transition:var(--t);
 }
-.hero-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg,
-    rgba(0,47,107,0.82) 0%,
-    rgba(0,71,171,0.70) 40%,
-    rgba(0,100,60,0.40) 100%
-  );
-}
-.hero-particles {
-  position: absolute; inset: 0; overflow: hidden;
-  pointer-events: none;
-}
-.particle {
-  position: absolute; border-radius: 50%;
-  background: rgba(92,203,59,0.4);
-  animation: floatParticle linear infinite;
-}
-.hero-content {
-  position: relative; z-index: 2;
-  max-width: 1200px; margin: 0 auto;
-  padding: 0 40px; width: 100%;
-  padding-top: 72px;
-}
-.hero-badge {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(92,203,59,0.15);
-  border: 1px solid rgba(92,203,59,0.4);
-  backdrop-filter: blur(10px);
-  padding: 8px 18px; border-radius: 40px;
-  margin-bottom: 28px;
-  animation: fadeUp 0.8s ease 0.3s both;
-}
-.hero-badge-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--verde);
-  animation: pulseDot 2s ease infinite;
-}
-@keyframes pulseDot {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(92,203,59,0.6); }
-  50% { box-shadow: 0 0 0 6px rgba(92,203,59,0); }
-}
-.hero-badge-text {
-  font-size: 12px; font-weight: 600;
-  color: var(--verde); letter-spacing: 1.5px; text-transform: uppercase;
-}
-.hero-h1 {
-  font-family: var(--font-display);
-  font-size: clamp(36px, 5.5vw, 72px);
-  font-weight: 900; line-height: 1.05;
-  color: var(--blanco);
-  margin-bottom: 20px;
-  animation: fadeUp 0.8s ease 0.5s both;
-}
-.hero-h1 .verde { color: var(--verde); }
-.hero-slogan {
-  font-size: clamp(16px, 2vw, 22px);
-  font-weight: 600; font-style: italic;
-  color: rgba(255,255,255,0.9);
-  margin-bottom: 16px;
-  animation: fadeUp 0.8s ease 0.65s both;
-}
-.hero-sub {
-  font-size: clamp(14px, 1.5vw, 17px);
-  color: rgba(255,255,255,0.75);
-  max-width: 580px; line-height: 1.7;
-  margin-bottom: 36px;
-  animation: fadeUp 0.8s ease 0.8s both;
-}
-.hero-btns {
-  display: flex; gap: 14px; flex-wrap: wrap;
-  animation: fadeUp 0.8s ease 0.95s both;
-}
-.btn-primary {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--verde);
-  color: var(--blanco);
-  font-weight: 700; font-size: 14px;
-  padding: 14px 28px; border-radius: 12px;
-  box-shadow: 0 8px 30px rgba(92,203,59,0.5);
-  transition: var(--transition);
-  letter-spacing: 0.3px;
-}
-.btn-primary:hover { background: var(--verde-dark); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(92,203,59,0.6); }
-.btn-secondary {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: rgba(255,255,255,0.12);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: var(--blanco);
-  font-weight: 600; font-size: 14px;
-  padding: 14px 28px; border-radius: 12px;
-  transition: var(--transition);
-}
-.btn-secondary:hover { background: rgba(255,255,255,0.22); transform: translateY(-2px); }
-.hero-scroll {
-  position: absolute; bottom: 36px; left: 50%;
-  transform: translateX(-50%);
-  display: flex; flex-direction: column;
-  align-items: center; gap: 8px;
-  color: rgba(255,255,255,0.6);
-  font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
-  animation: fadeUp 1s ease 1.4s both;
-}
-.scroll-line {
-  width: 1px; height: 40px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.5), transparent);
-  animation: scrollLine 2s ease infinite;
-}
-@keyframes scrollLine {
-  0% { transform: scaleY(0); transform-origin: top; }
-  50% { transform: scaleY(1); transform-origin: top; }
-  51% { transform: scaleY(1); transform-origin: bottom; }
-  100% { transform: scaleY(0); transform-origin: bottom; }
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes floatParticle {
-  0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
-  10% { opacity: 0.8; }
-  90% { opacity: 0.8; }
-  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-}
+.mnav-link:hover{color:var(--verde);background:rgba(255,255,255,.05)}
 
-/* ==================== STATS BAR ==================== */
-.stats-bar {
-  background: var(--blanco);
-  box-shadow: var(--sombra-azul);
-  padding: 0 40px;
-  position: relative; z-index: 10;
+/* ===== HERO ===== */
+#hero{
+  position:relative;height:100vh;min-height:680px;
+  display:flex;align-items:center;overflow:hidden;
 }
-.stats-inner {
-  max-width: 1200px; margin: 0 auto;
-  display: grid; grid-template-columns: repeat(4, 1fr);
-  border-left: 1px solid var(--gris-200);
+.hero-bg{
+  position:absolute;inset:0;
+  background:url('https://github.com/jhonmalorne/Concertacion/blob/main/561569243_18531223561001009_1410951617980685524_n.jpg?raw=true') center top / cover no-repeat;
+  animation:hero-zoom 22s ease infinite alternate;
 }
-.stat-item {
-  padding: 28px 32px;
-  border-right: 1px solid var(--gris-200);
-  display: flex; flex-direction: column; align-items: flex-start;
-  transition: var(--transition);
+@keyframes hero-zoom{from{transform:scale(1.04)}to{transform:scale(1.12)}}
+.hero-ov{
+  position:absolute;inset:0;
+  background:linear-gradient(120deg,rgba(0,51,128,.88) 0%,rgba(0,71,171,.72) 45%,rgba(0,100,50,.38) 100%);
 }
-.stat-item:hover { background: var(--azul-pale); }
-.stat-num {
-  font-family: var(--font-display);
-  font-size: 38px; font-weight: 900;
-  color: var(--azul); line-height: 1;
-  margin-bottom: 4px;
+.hero-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.ptcl{
+  position:absolute;border-radius:50%;
+  background:rgba(92,203,59,.4);
+  animation:ptcl-float linear infinite;
 }
-.stat-num .verde { color: var(--verde); }
-.stat-label { font-size: 13px; color: var(--gris-600); font-weight: 500; }
+@keyframes ptcl-float{
+  0%{transform:translateY(110vh) rotate(0);opacity:0}
+  8%{opacity:.7}
+  92%{opacity:.7}
+  100%{transform:translateY(-10vh) rotate(720deg);opacity:0}
+}
+.hero-content{
+  position:relative;z-index:2;
+  max-width:1200px;margin:0 auto;
+  padding:0 48px;width:100%;padding-top:70px;
+}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:9px;
+  background:rgba(92,203,59,.12);
+  border:1px solid rgba(92,203,59,.38);
+  backdrop-filter:blur(12px);
+  padding:8px 18px;border-radius:40px;
+  margin-bottom:26px;
+  animation:fadeUp .7s ease .2s both;
+}
+.hero-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--verde);
+  animation:pulse-dot 2.2s ease infinite;
+}
+@keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(92,203,59,.6)}50%{box-shadow:0 0 0 7px rgba(92,203,59,0)}}
+.hero-badge-txt{font-size:11px;font-weight:700;color:var(--verde);letter-spacing:1.8px;text-transform:uppercase}
+.hero-h1{
+  font-family:var(--font-h);
+  font-size:clamp(34px,5.5vw,70px);
+  font-weight:900;line-height:1.05;
+  color:var(--blanco);margin-bottom:18px;
+  animation:fadeUp .7s ease .38s both;
+}
+.hero-h1 em{color:var(--verde);font-style:normal}
+.hero-slogan{
+  font-size:clamp(15px,1.9vw,21px);font-weight:600;font-style:italic;
+  color:rgba(255,255,255,.92);margin-bottom:14px;
+  animation:fadeUp .7s ease .52s both;
+}
+.hero-sub{
+  font-size:clamp(14px,1.4vw,17px);color:rgba(255,255,255,.75);
+  max-width:580px;line-height:1.75;margin-bottom:36px;
+  animation:fadeUp .7s ease .65s both;
+}
+.hero-btns{display:flex;gap:13px;flex-wrap:wrap;animation:fadeUp .7s ease .8s both}
+.btn-p{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--verde);color:var(--blanco);
+  font-weight:700;font-size:14px;padding:14px 28px;
+  border-radius:12px;box-shadow:0 8px 30px rgba(92,203,59,.5);
+  transition:var(--t);letter-spacing:.3px;
+}
+.btn-p:hover{background:var(--verde-dk);transform:translateY(-2px);box-shadow:0 12px 40px rgba(92,203,59,.6)}
+.btn-s{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.11);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.3);color:var(--blanco);
+  font-weight:600;font-size:14px;padding:14px 28px;border-radius:12px;transition:var(--t);
+}
+.btn-s:hover{background:rgba(255,255,255,.2);transform:translateY(-2px)}
+.hero-scroll{
+  position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:rgba(255,255,255,.55);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;
+  animation:fadeUp .8s ease 1.2s both;
+}
+.scroll-ln{
+  width:1px;height:38px;
+  background:linear-gradient(180deg,rgba(255,255,255,.5),transparent);
+  animation:scroll-line 2.2s ease infinite;
+}
+@keyframes scroll-line{
+  0%{transform:scaleY(0);transform-origin:top}
+  49%{transform:scaleY(1);transform-origin:top}
+  50%{transform:scaleY(1);transform-origin:bottom}
+  100%{transform:scaleY(0);transform-origin:bottom}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
 
-/* ==================== SECTION COMMON ==================== */
-.section {
-  padding: 100px 40px;
+/* ===== STATS BAR ===== */
+.stats-bar{background:var(--blanco);box-shadow:var(--sh);position:relative;z-index:10}
+.stats-inner{
+  max-width:1200px;margin:0 auto;
+  display:grid;grid-template-columns:repeat(4,1fr);
 }
-.section-inner { max-width: 1200px; margin: 0 auto; }
-.section-label {
-  font-size: 11px; font-weight: 700;
-  color: var(--verde-dark); letter-spacing: 3px;
-  text-transform: uppercase; margin-bottom: 8px;
-  display: flex; align-items: center; gap: 10px;
+.stat-item{
+  padding:28px 32px;border-right:1px solid var(--gris-200);
+  transition:var(--t);cursor:default;
 }
-.section-label::before {
-  content: ''; display: block;
-  width: 24px; height: 2px;
-  background: var(--verde);
+.stat-item:last-child{border-right:none}
+.stat-item:hover{background:var(--azul-pal)}
+.stat-num{
+  font-family:var(--font-h);font-size:38px;font-weight:900;
+  color:var(--azul);line-height:1;margin-bottom:4px;
 }
-.section-title {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 3.5vw, 44px);
-  font-weight: 900; color: var(--texto);
-  line-height: 1.15; margin-bottom: 16px;
-}
-.section-title .azul { color: var(--azul); }
-.section-title .verde { color: var(--verde); }
-.section-desc {
-  font-size: 16px; color: var(--gris-600);
-  line-height: 1.8; max-width: 600px;
-  margin-bottom: 56px;
-}
+.stat-num sup{font-size:22px;color:var(--verde)}
+.stat-lbl{font-size:13px;color:var(--gris-600);font-weight:500}
 
-/* ==================== PILARES ==================== */
-#pilares { background: var(--gris-100); }
-.pilares-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
+/* ===== SECTIONS ===== */
+.sec{padding:96px 48px}
+.sec-inner{max-width:1200px;margin:0 auto}
+.sec-tag{
+  font-size:10px;font-weight:700;color:var(--verde-dk);letter-spacing:3px;
+  text-transform:uppercase;margin-bottom:8px;
+  display:flex;align-items:center;gap:10px;
 }
-.pilar-card {
-  background: var(--blanco);
-  border-radius: var(--radio);
-  padding: 32px 28px;
-  border: 1px solid var(--gris-200);
-  transition: var(--transition);
-  position: relative; overflow: hidden;
+.sec-tag::before{content:'';display:block;width:22px;height:2px;background:var(--verde)}
+.sec-h{
+  font-family:var(--font-h);font-size:clamp(26px,3.4vw,44px);
+  font-weight:900;color:var(--negro);line-height:1.12;margin-bottom:14px;
 }
-.pilar-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--azul), var(--verde));
-  transform: scaleX(0); transform-origin: left;
-  transition: transform 0.4s ease;
-}
-.pilar-card:hover::before { transform: scaleX(1); }
-.pilar-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--sombra-azul);
-  border-color: transparent;
-}
-.pilar-icon {
-  width: 52px; height: 52px;
-  background: var(--azul-pale);
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 20px; font-size: 24px;
-  transition: var(--transition);
-}
-.pilar-card:hover .pilar-icon {
-  background: var(--azul);
-  transform: scale(1.05);
-}
-.pilar-h {
-  font-family: var(--font-display);
-  font-size: 17px; font-weight: 800;
-  color: var(--texto); margin-bottom: 10px;
-  text-transform: uppercase; letter-spacing: 0.3px;
-}
-.pilar-p { font-size: 14px; color: var(--gris-600); line-height: 1.7; }
+.sec-h .az{color:var(--azul)}.sec-h .vd{color:var(--verde)}
+.sec-p{font-size:16px;color:var(--gris-600);line-height:1.85;max-width:600px;margin-bottom:52px}
 
-/* ==================== MAPA ==================== */
-#mapa-section { background: var(--blanco); padding: 80px 0 0; }
-.mapa-header { padding: 0 40px 48px; max-width: 1200px; margin: 0 auto; }
-#map-container {
-  position: relative;
-  width: 100%; height: 620px;
-  background: var(--gris-100);
+/* ===== PILARES ===== */
+#pilares{background:var(--gris-50)}
+.pilares-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.pilar-card{
+  background:var(--blanco);border-radius:var(--r);padding:32px 26px;
+  border:1px solid var(--gris-200);position:relative;overflow:hidden;transition:var(--t);
 }
-#map { width: 100%; height: 100%; }
-.map-info-panel {
-  position: absolute; top: 20px; right: 20px; z-index: 500;
-  width: 300px;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(20px);
-  border-radius: var(--radio);
-  border: 1px solid var(--gris-200);
-  box-shadow: var(--sombra-card);
-  overflow: hidden;
-  transform: translateX(320px);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.pilar-card::after{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--azul),var(--verde));
+  transform:scaleX(0);transform-origin:left;transition:transform .4s ease;
 }
-.map-info-panel.open { transform: translateX(0); }
-.mip-header {
-  background: linear-gradient(135deg, var(--azul), var(--azul-light));
-  padding: 20px 20px 16px;
-  color: var(--blanco);
+.pilar-card:hover::after{transform:scaleX(1)}
+.pilar-card:hover{transform:translateY(-5px);box-shadow:var(--sh);border-color:transparent}
+.pilar-ico{
+  width:54px;height:54px;border-radius:14px;background:var(--azul-pal);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;margin-bottom:20px;transition:var(--t);
 }
-.mip-estado {
-  font-family: var(--font-display);
-  font-size: 20px; font-weight: 800;
-  text-transform: uppercase; letter-spacing: 1px;
-  margin-bottom: 4px;
+.pilar-card:hover .pilar-ico{background:var(--azul);transform:scale(1.06)}
+.pilar-h{
+  font-family:var(--font-h);font-size:16px;font-weight:800;color:var(--negro);
+  text-transform:uppercase;letter-spacing:.3px;margin-bottom:10px;
 }
-.mip-sub { font-size: 12px; opacity: 0.8; }
-.mip-body { padding: 18px 20px; }
-.mip-stat {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 10px 0; border-bottom: 1px solid var(--gris-200);
-}
-.mip-stat:last-child { border-bottom: none; }
-.mip-stat-label { font-size: 13px; color: var(--gris-600); font-weight: 500; }
-.mip-stat-val {
-  font-family: var(--font-display);
-  font-size: 16px; font-weight: 800; color: var(--azul);
-}
-.mip-btn {
-  display: block; width: 100%;
-  background: linear-gradient(135deg, var(--verde), var(--verde-dark));
-  color: var(--blanco); font-weight: 700; font-size: 13px;
-  padding: 13px; border-radius: 10px; text-align: center;
-  margin-top: 16px; transition: var(--transition); border: none;
-}
-.mip-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(92,203,59,0.4); }
-.map-legend {
-  position: absolute; bottom: 20px; left: 20px; z-index: 500;
-  background: rgba(255,255,255,0.97);
-  backdrop-filter: blur(10px);
-  border-radius: 12px; border: 1px solid var(--gris-200);
-  padding: 14px 18px;
-  font-size: 12px;
-}
-.legend-title { font-weight: 700; color: var(--texto); margin-bottom: 10px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
-.legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; color: var(--gris-600); }
-.legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+.pilar-p{font-size:14px;color:var(--gris-600);line-height:1.72}
 
-/* Leaflet overrides */
-.leaflet-popup-content-wrapper {
-  border-radius: 14px !important;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.15) !important;
-  border: none !important;
-  padding: 0 !important;
-  overflow: hidden;
-}
-.leaflet-popup-content { margin: 0 !important; width: auto !important; }
-.leaflet-popup-tip { display: none !important; }
-.custom-popup {
-  padding: 20px;
-  min-width: 220px;
-}
-.cp-title {
-  font-family: var(--font-display);
-  font-weight: 800; font-size: 16px;
-  color: var(--azul); margin-bottom: 6px;
-  text-transform: uppercase; letter-spacing: 0.5px;
-}
-.cp-tag {
-  display: inline-block;
-  background: var(--verde-pale);
-  color: var(--verde-dark);
-  font-size: 11px; font-weight: 600;
-  padding: 3px 10px; border-radius: 20px;
-  margin-bottom: 12px;
-}
-.cp-p { font-size: 13px; color: var(--gris-600); line-height: 1.6; }
+/* ===== MAPA ===== */
+#mapa-sec{background:var(--blanco);padding-bottom:0}
+.mapa-hdr{max-width:1200px;margin:0 auto;padding:0 48px 44px}
+#map-wrap{position:relative;width:100%;height:600px;background:var(--gris-100)}
+#map{width:100%;height:100%}
 
-/* ==================== ORGANIZACIÓN ==================== */
-#organizacion { background: var(--gris-100); }
-.org-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
-  margin-bottom: 60px;
+/* Map side panel */
+.map-panel{
+  position:absolute;top:18px;right:18px;z-index:500;
+  width:292px;background:rgba(255,255,255,.98);backdrop-filter:blur(20px);
+  border-radius:var(--r);border:1px solid var(--gris-200);box-shadow:var(--sh2);
+  overflow:hidden;transform:translateX(310px);
+  transition:transform .42s var(--ease);
 }
-.org-card {
-  background: var(--blanco);
-  border-radius: var(--radio);
-  padding: 28px 24px;
-  border: 1px solid var(--gris-200);
-  text-align: center;
-  transition: var(--transition);
-  position: relative;
+.map-panel.open{transform:translateX(0)}
+.mp-head{
+  background:linear-gradient(135deg,var(--azul),var(--azul-lt));
+  padding:20px;color:var(--blanco);
 }
-.org-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 48px rgba(0,71,171,0.12);
-  border-color: var(--azul-pale);
+.mp-estado{font-family:var(--font-h);font-size:19px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.mp-sub{font-size:11px;opacity:.8}
+.mp-body{padding:16px 18px}
+.mp-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:9px 0;border-bottom:1px solid var(--gris-200);
 }
-.org-level {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--gris-600); margin-bottom: 14px;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
+.mp-row:last-of-type{border-bottom:none}
+.mp-lbl{font-size:12px;color:var(--gris-600);font-weight:500}
+.mp-val{font-family:var(--font-h);font-size:15px;font-weight:800;color:var(--azul)}
+.mp-msg{
+  background:var(--verde-pal);border-radius:10px;padding:12px 14px;margin-top:12px;
+  font-size:12px;color:var(--verde-dk);line-height:1.6;font-weight:500;text-align:center;
 }
-.org-level::before, .org-level::after {
-  content: ''; flex: 1; height: 1px;
-  background: var(--gris-200);
+.mp-close-btn{
+  display:block;width:100%;background:linear-gradient(135deg,var(--verde),var(--verde-dk));
+  color:var(--blanco);font-weight:700;font-size:12px;
+  padding:12px;border-radius:10px;text-align:center;margin-top:14px;
+  transition:var(--t);border:none;cursor:pointer;
 }
-.org-icon-wrap {
-  width: 68px; height: 68px; border-radius: 18px;
-  background: linear-gradient(135deg, var(--azul), var(--azul-light));
-  display: flex; align-items: center; justify-content: center;
-  margin: 0 auto 16px; font-size: 28px;
-  box-shadow: 0 8px 24px rgba(0,71,171,0.3);
-}
-.org-title {
-  font-family: var(--font-display);
-  font-size: 16px; font-weight: 800;
-  color: var(--texto); margin-bottom: 8px;
-  text-transform: uppercase;
-}
-.org-desc { font-size: 13px; color: var(--gris-600); line-height: 1.65; }
+.mp-close-btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(92,203,59,.4)}
 
-.stats-counters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
+.map-legend{
+  position:absolute;bottom:18px;left:18px;z-index:500;
+  background:rgba(255,255,255,.97);backdrop-filter:blur(10px);
+  border-radius:12px;border:1px solid var(--gris-200);padding:14px 16px;font-size:12px;
 }
-.counter-card {
-  background: linear-gradient(135deg, var(--azul), var(--azul-light));
-  border-radius: var(--radio); padding: 28px 24px;
-  color: var(--blanco); text-align: center;
-  transition: var(--transition);
-}
-.counter-card:nth-child(even) {
-  background: linear-gradient(135deg, var(--verde-dark), var(--verde));
-}
-.counter-card:hover { transform: translateY(-4px); }
-.counter-num {
-  font-family: var(--font-display);
-  font-size: 42px; font-weight: 900; line-height: 1;
-  margin-bottom: 6px;
-}
-.counter-label { font-size: 13px; opacity: 0.85; font-weight: 500; }
+.ml-title{font-weight:700;color:var(--negro);margin-bottom:9px;font-size:10px;text-transform:uppercase;letter-spacing:1px}
+.ml-item{display:flex;align-items:center;gap:8px;margin-bottom:6px;color:var(--gris-600)}
+.ml-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
 
-/* ==================== LIDERAZGO ==================== */
-#liderazgo { background: var(--blanco); }
-.liderazgo-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
-  margin-bottom: 48px;
+/* Leaflet popup */
+.leaflet-popup-content-wrapper{
+  border-radius:14px!important;box-shadow:0 8px 40px rgba(0,0,0,.15)!important;
+  border:none!important;padding:0!important;overflow:hidden;
 }
-.lider-card {
-  border-radius: var(--radio-xl);
-  overflow: hidden;
-  position: relative;
-  box-shadow: var(--sombra-card);
-  transition: var(--transition);
-  cursor: pointer;
-}
-.lider-card:hover { transform: translateY(-6px); box-shadow: 0 24px 64px rgba(0,71,171,0.2); }
-.lider-img {
-  width: 100%; aspect-ratio: 3/4; object-fit: cover;
-  object-position: top center;
-  transition: transform 0.5s ease;
-}
-.lider-card:hover .lider-img { transform: scale(1.04); }
-.lider-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(0,30,80,0.92) 100%);
-}
-.lider-info {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 28px 24px;
-}
-.lider-badge {
-  display: inline-block;
-  background: var(--verde);
-  color: var(--blanco);
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  padding: 4px 12px; border-radius: 20px;
-  margin-bottom: 10px;
-}
-.lider-nombre {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 900;
-  color: var(--blanco); line-height: 1.2;
-  margin-bottom: 6px;
-}
-.lider-cargo { font-size: 13px; color: rgba(255,255,255,0.75); }
-.lider-quote {
-  font-size: 13px; font-style: italic;
-  color: rgba(255,255,255,0.65);
-  margin-top: 10px; line-height: 1.5;
-  border-left: 2px solid var(--verde);
-  padding-left: 12px;
-  opacity: 0; transform: translateY(10px);
-  transition: all 0.35s ease;
-}
-.lider-card:hover .lider-quote { opacity: 1; transform: translateY(0); }
+.leaflet-popup-content{margin:0!important;width:auto!important}
+.leaflet-popup-tip-container{display:none}
+.cpop{padding:18px 20px;min-width:200px}
+.cpop-name{font-family:var(--font-h);font-weight:800;font-size:15px;color:var(--azul);margin-bottom:5px;text-transform:uppercase}
+.cpop-tag{display:inline-block;background:var(--verde-pal);color:var(--verde-dk);font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.cpop-p{font-size:12px;color:var(--gris-600);line-height:1.6}
 
-.alianza-banner {
-  background: linear-gradient(135deg, var(--azul) 0%, var(--azul-light) 50%, var(--verde-dark) 100%);
-  border-radius: var(--radio-xl);
-  padding: 48px 48px;
-  display: grid; grid-template-columns: 1fr auto;
-  gap: 32px; align-items: center;
-  position: relative; overflow: hidden;
+/* ===== ORGANIZACIÓN ===== */
+#org{background:var(--gris-50)}
+.org-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;margin-bottom:56px}
+.org-card{
+  background:var(--blanco);border-radius:var(--r);padding:28px 22px;
+  border:1px solid var(--gris-200);text-align:center;transition:var(--t);
 }
-.alianza-banner::before {
-  content: '';
-  position: absolute; top: -40px; right: 80px;
-  width: 200px; height: 200px;
-  background: rgba(255,255,255,0.05);
-  border-radius: 50%;
+.org-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(0,71,171,.1);border-color:var(--azul-pal)}
+.org-lvl{
+  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--gris-400);margin-bottom:14px;
+  display:flex;align-items:center;justify-content:center;gap:6px;
 }
-.alianza-banner::after {
-  content: '';
-  position: absolute; bottom: -60px; right: -20px;
-  width: 240px; height: 240px;
-  background: rgba(92,203,59,0.08);
-  border-radius: 50%;
+.org-lvl::before,.org-lvl::after{content:'';flex:1;height:1px;background:var(--gris-200)}
+.org-ico{
+  width:64px;height:64px;border-radius:18px;
+  background:linear-gradient(135deg,var(--azul),var(--azul-lt));
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 16px;font-size:26px;
+  box-shadow:0 8px 24px rgba(0,71,171,.25);
 }
-.alianza-text .section-label { color: rgba(255,255,255,0.7); }
-.alianza-text .section-label::before { background: var(--verde); }
-.alianza-title {
-  font-family: var(--font-display);
-  font-size: clamp(22px, 3vw, 32px);
-  font-weight: 900; color: var(--blanco);
-  line-height: 1.2; margin-bottom: 14px;
+.org-title{font-family:var(--font-h);font-size:15px;font-weight:800;color:var(--negro);margin-bottom:8px;text-transform:uppercase}
+.org-desc{font-size:13px;color:var(--gris-600);line-height:1.68}
+
+.counters-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px}
+.cnt-card{
+  border-radius:var(--r);padding:28px 22px;color:var(--blanco);text-align:center;
+  transition:var(--t);
 }
-.alianza-desc { font-size: 15px; color: rgba(255,255,255,0.8); line-height: 1.7; }
-.alianza-img {
-  width: 200px; height: 200px;
-  border-radius: 50%;
-  object-fit: cover; object-position: top;
-  border: 4px solid rgba(255,255,255,0.25);
-  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
-  flex-shrink: 0;
-  position: relative; z-index: 1;
+.cnt-card:nth-child(odd){background:linear-gradient(135deg,var(--azul),var(--azul-lt))}
+.cnt-card:nth-child(even){background:linear-gradient(135deg,var(--verde-dk),var(--verde))}
+.cnt-card:hover{transform:translateY(-4px)}
+.cnt-num{font-family:var(--font-h);font-size:40px;font-weight:900;line-height:1;margin-bottom:5px}
+.cnt-lbl{font-size:12px;opacity:.88;font-weight:500}
+
+/* ===== LIDERAZGO ===== */
+#liderazgo{background:var(--blanco)}
+.lider-g{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-bottom:44px}
+.lider-card{
+  border-radius:var(--rl);overflow:hidden;position:relative;
+  box-shadow:var(--sh2);transition:var(--t);cursor:default;
+}
+.lider-card:hover{transform:translateY(-6px);box-shadow:0 24px 64px rgba(0,71,171,.2)}
+.lider-img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top center;transition:transform .5s ease}
+.lider-card:hover .lider-img{transform:scale(1.04)}
+.lider-ov{position:absolute;inset:0;background:linear-gradient(180deg,transparent 38%,rgba(0,20,70,.9) 100%)}
+.lider-info{position:absolute;bottom:0;left:0;right:0;padding:26px 22px}
+.lider-badge{
+  display:inline-block;background:var(--verde);color:var(--blanco);
+  font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
+  padding:4px 11px;border-radius:20px;margin-bottom:9px;
+}
+.lider-name{font-family:var(--font-h);font-size:20px;font-weight:900;color:var(--blanco);line-height:1.2;margin-bottom:5px}
+.lider-cargo{font-size:12px;color:rgba(255,255,255,.72)}
+.lider-quote{
+  font-size:12px;font-style:italic;color:rgba(255,255,255,.6);
+  margin-top:10px;line-height:1.5;border-left:2px solid var(--verde);padding-left:11px;
+  opacity:0;transform:translateY(8px);transition:all .35s ease;
+}
+.lider-card:hover .lider-quote{opacity:1;transform:translateY(0)}
+
+/* ALIANZA */
+.alianza{
+  background:linear-gradient(135deg,var(--azul) 0%,var(--azul-lt) 55%,var(--verde-dk) 100%);
+  border-radius:var(--rl);padding:52px 52px;
+  display:grid;grid-template-columns:1fr auto;gap:36px;align-items:center;
+  position:relative;overflow:hidden;
+}
+.alianza::before{
+  content:'';position:absolute;top:-60px;right:100px;
+  width:260px;height:260px;background:rgba(255,255,255,.04);border-radius:50%;
+}
+.al-tag{color:rgba(255,255,255,.65)!important}
+.al-tag::before{background:var(--verde)!important}
+.al-h{font-family:var(--font-h);font-size:clamp(20px,2.8vw,30px);font-weight:900;color:var(--blanco);line-height:1.2;margin-bottom:14px}
+.al-p{font-size:15px;color:rgba(255,255,255,.8);line-height:1.75}
+.al-img{
+  width:190px;height:190px;border-radius:50%;
+  object-fit:cover;object-position:top;
+  border:4px solid rgba(255,255,255,.25);
+  box-shadow:0 16px 48px rgba(0,0,0,.3);
+  flex-shrink:0;position:relative;z-index:1;
 }
 
-/* ==================== MULTIMEDIA ==================== */
-#multimedia { background: var(--gris-100); }
-.media-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+/* ===== QR STRIP ===== */
+.qr-strip{
+  background:linear-gradient(90deg,var(--azul-pal),var(--verde-pal));
+  padding:48px 48px;
+  display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap;
+  border-top:3px solid var(--verde);border-bottom:3px solid var(--azul);
 }
-.media-card {
-  border-radius: var(--radio);
-  overflow: hidden;
-  background: var(--blanco);
-  box-shadow: var(--sombra-card);
-  transition: var(--transition);
-  cursor: pointer;
+.qr-txt h3{font-family:var(--font-h);font-size:26px;font-weight:900;color:var(--azul);margin-bottom:6px}
+.qr-txt p{font-size:15px;color:var(--gris-600);max-width:420px;line-height:1.7}
+.qr-img-wrap{display:flex;align-items:center;gap:24px}
+.qr-img{
+  width:140px;height:140px;border-radius:16px;
+  object-fit:cover;
+  border:3px solid var(--azul);
+  box-shadow:var(--sh);
 }
-.media-card:hover { transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,0.12); }
-.media-thumb {
-  position: relative;
-  aspect-ratio: 16/9;
-  background: linear-gradient(135deg, var(--azul), var(--azul-light));
-  overflow: hidden;
+.qr-btn{
+  display:flex;flex-direction:column;align-items:center;gap:10px;
 }
-.media-thumb-img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform 0.5s ease;
+.qr-link{
+  background:var(--azul);color:var(--blanco);
+  font-weight:700;font-size:13px;padding:13px 24px;border-radius:12px;
+  transition:var(--t);display:inline-flex;align-items:center;gap:8px;
 }
-.media-card:hover .media-thumb-img { transform: scale(1.05); }
-.media-play {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(0,30,80,0.35);
-  transition: var(--transition);
-}
-.media-card:hover .media-play { background: rgba(0,71,171,0.5); }
-.play-btn {
-  width: 56px; height: 56px;
-  background: rgba(255,255,255,0.95);
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-  transition: var(--transition);
-}
-.media-card:hover .play-btn { transform: scale(1.1); background: var(--verde); }
-.play-triangle {
-  width: 0; height: 0;
-  border-top: 10px solid transparent;
-  border-bottom: 10px solid transparent;
-  border-left: 18px solid var(--azul);
-  margin-left: 3px;
-  transition: var(--transition);
-}
-.media-card:hover .play-triangle { border-left-color: var(--blanco); }
-.media-body { padding: 20px; }
-.media-tag {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--verde-dark); margin-bottom: 8px;
-}
-.media-title {
-  font-family: var(--font-display);
-  font-size: 16px; font-weight: 700;
-  color: var(--texto); margin-bottom: 6px;
-}
-.media-desc { font-size: 13px; color: var(--gris-600); line-height: 1.6; }
+.qr-link:hover{background:var(--azul-dk);transform:translateY(-2px);box-shadow:var(--sh)}
+.qr-note{font-size:11px;color:var(--gris-400);text-align:center}
 
-/* ==================== VIDEO MODAL ==================== */
-#video-modal {
-  position: fixed; inset: 0; z-index: 9000;
-  background: rgba(0,0,0,0.88);
-  backdrop-filter: blur(10px);
-  display: flex; align-items: center; justify-content: center;
-  padding: 20px;
-  opacity: 0; visibility: hidden;
-  transition: all 0.3s ease;
+/* ===== JINGLE ===== */
+.jingle-bar{
+  background:var(--gris-50);border-top:1px solid var(--gris-200);border-bottom:1px solid var(--gris-200);
+  padding:26px 48px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;
 }
-#video-modal.open { opacity: 1; visibility: visible; }
-.modal-inner {
-  width: 100%; max-width: 900px;
-  position: relative;
-  transform: scale(0.95);
-  transition: transform 0.3s ease;
+.jingle-info{display:flex;align-items:center;gap:16px}
+.jingle-disc{
+  width:52px;height:52px;background:linear-gradient(135deg,var(--azul),var(--verde));
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;
+  animation:spin-disc 6s linear infinite paused;
+  box-shadow:0 4px 16px rgba(0,71,171,.3);
 }
-#video-modal.open .modal-inner { transform: scale(1); }
-.modal-close {
-  position: absolute; top: -48px; right: 0;
-  width: 40px; height: 40px;
-  background: rgba(255,255,255,0.15);
-  border-radius: 50%; border: none;
-  color: var(--blanco); font-size: 20px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: var(--transition);
+.jingle-disc.spinning{animation-play-state:running}
+@keyframes spin-disc{to{transform:rotate(360deg)}}
+.jingle-txt h4{font-family:var(--font-h);font-size:16px;font-weight:800;color:var(--azul);margin-bottom:3px}
+.jingle-txt p{font-size:12px;color:var(--gris-600)}
+.jingle-btn{
+  display:inline-flex;align-items:center;gap:9px;
+  background:var(--azul);color:var(--blanco);
+  font-weight:700;font-size:13px;padding:12px 22px;border-radius:10px;
+  transition:var(--t);
 }
-.modal-close:hover { background: rgba(255,255,255,0.25); transform: rotate(90deg); }
-.modal-video-wrap {
-  aspect-ratio: 16/9; border-radius: var(--radio);
-  overflow: hidden; background: #000;
-}
-.modal-video-wrap video {
-  width: 100%; height: 100%; object-fit: contain;
-}
+.jingle-btn:hover{background:var(--azul-dk);transform:translateY(-1px)}
+.jw{display:flex;align-items:center;gap:2px;height:18px}
+.jw-b{width:3px;background:var(--blanco);border-radius:2px;animation:jw-anim .8s ease infinite alternate}
+.jw-b:nth-child(1){height:7px;animation-delay:0s}
+.jw-b:nth-child(2){height:13px;animation-delay:.12s}
+.jw-b:nth-child(3){height:17px;animation-delay:.25s}
+.jw-b:nth-child(4){height:11px;animation-delay:.38s}
+.jw-b:nth-child(5){height:7px;animation-delay:.5s}
+.jw.paused .jw-b{animation-play-state:paused}
+@keyframes jw-anim{from{transform:scaleY(.5);opacity:.5}to{transform:scaleY(1);opacity:1}}
 
-/* ==================== DOCUMENTOS ==================== */
-#documentos { background: var(--blanco); }
-.docs-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
+/* ===== GALERÍA ===== */
+#galeria{background:var(--gris-50)}
+.gallery-g{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.gal-item{
+  border-radius:var(--r);overflow:hidden;
+  aspect-ratio:4/3;cursor:pointer;transition:var(--t);
 }
-.doc-card {
-  background: var(--blanco);
-  border: 1px solid var(--gris-200);
-  border-radius: var(--radio);
-  padding: 32px 28px;
-  display: flex; flex-direction: column;
-  transition: var(--transition);
-  position: relative; overflow: hidden;
-}
-.doc-card::after {
-  content: '';
-  position: absolute; top: 0; left: 0; bottom: 0;
-  width: 4px;
-  background: linear-gradient(180deg, var(--azul), var(--verde));
-}
-.doc-card:hover { transform: translateY(-4px); box-shadow: var(--sombra-azul); border-color: transparent; }
-.doc-icon {
-  font-size: 36px; margin-bottom: 16px;
-}
-.doc-type {
-  font-size: 10px; font-weight: 700;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--verde-dark); margin-bottom: 8px;
-}
-.doc-title {
-  font-family: var(--font-display);
-  font-size: 19px; font-weight: 800;
-  color: var(--texto); margin-bottom: 12px;
-  text-transform: uppercase;
-}
-.doc-desc { font-size: 14px; color: var(--gris-600); line-height: 1.7; margin-bottom: 24px; flex: 1; }
-.doc-btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  background: var(--azul);
-  color: var(--blanco);
-  font-weight: 700; font-size: 13px;
-  padding: 12px 22px; border-radius: 10px;
-  transition: var(--transition);
-  align-self: flex-start;
-}
-.doc-btn:hover { background: var(--azul-dark); transform: translateX(4px); }
+.gal-item:first-child{grid-column:span 2;aspect-ratio:16/7}
+.gal-item:hover{transform:scale(1.02);box-shadow:0 16px 48px rgba(0,0,0,.14)}
+.gal-item img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease}
+.gal-item:hover img{transform:scale(1.06)}
 
-/* ==================== CTA FINAL ==================== */
-#cta-final {
-  background: linear-gradient(135deg, var(--azul) 0%, var(--azul-light) 60%, var(--verde-dark) 100%);
-  padding: 100px 40px;
-  text-align: center; position: relative; overflow: hidden;
+/* ===== MULTIMEDIA ===== */
+#multimedia{background:var(--blanco)}
+.media-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.media-card{
+  border-radius:var(--r);overflow:hidden;background:var(--blanco);
+  box-shadow:var(--sh2);transition:var(--t);cursor:pointer;border:1px solid var(--gris-200);
 }
-#cta-final::before {
-  content: '';
-  position: absolute; top: -80px; left: 50%;
-  transform: translateX(-50%);
-  width: 400px; height: 400px;
-  background: rgba(255,255,255,0.04);
-  border-radius: 50%;
+.media-card:hover{transform:translateY(-4px);box-shadow:0 20px 56px rgba(0,0,0,.12);border-color:transparent}
+.media-thumb{position:relative;aspect-ratio:16/9;overflow:hidden}
+.media-bg{
+  width:100%;height:100%;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:8px;
 }
-.cta-content { position: relative; z-index: 1; }
-.cta-h {
-  font-family: var(--font-display);
-  font-size: clamp(28px, 4vw, 52px);
-  font-weight: 900; color: var(--blanco);
-  margin-bottom: 16px; line-height: 1.1;
+.media-bg span.ico{font-size:44px}
+.media-bg span.lbl{color:rgba(255,255,255,.8);font-size:12px;font-weight:600;font-family:var(--font-h);letter-spacing:.5px}
+.media-play-ov{
+  position:absolute;inset:0;background:rgba(0,20,70,.35);
+  display:flex;align-items:center;justify-content:center;transition:var(--t);
 }
-.cta-p { font-size: 18px; color: rgba(255,255,255,0.82); max-width: 560px; margin: 0 auto 36px; line-height: 1.7; }
-.cta-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-.btn-cta-main {
-  background: var(--blanco);
-  color: var(--azul);
-  font-weight: 800; font-size: 15px;
-  padding: 16px 36px; border-radius: 14px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-  transition: var(--transition); border: none;
-  display: inline-flex; align-items: center; gap: 8px;
+.media-card:hover .media-play-ov{background:rgba(0,71,171,.5)}
+.play-circle{
+  width:58px;height:58px;background:rgba(255,255,255,.95);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 28px rgba(0,0,0,.22);transition:var(--t);
 }
-.btn-cta-main:hover { transform: translateY(-3px); box-shadow: 0 16px 48px rgba(0,0,0,0.3); }
-.btn-cta-ghost {
-  background: rgba(255,255,255,0.1);
-  border: 2px solid rgba(255,255,255,0.4);
-  color: var(--blanco);
-  font-weight: 700; font-size: 15px;
-  padding: 14px 36px; border-radius: 14px;
-  transition: var(--transition);
-  display: inline-flex; align-items: center; gap: 8px;
+.media-card:hover .play-circle{transform:scale(1.1);background:var(--verde)}
+.play-tri{
+  width:0;height:0;
+  border-top:9px solid transparent;border-bottom:9px solid transparent;
+  border-left:16px solid var(--azul);margin-left:3px;transition:var(--t);
 }
-.btn-cta-ghost:hover { background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); transform: translateY(-2px); }
+.media-card:hover .play-tri{border-left-color:var(--blanco)}
+.media-body{padding:18px}
+.media-tag{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--verde-dk);margin-bottom:7px}
+.media-title{font-family:var(--font-h);font-size:15px;font-weight:700;color:var(--negro);margin-bottom:5px}
+.media-desc{font-size:12px;color:var(--gris-600);line-height:1.6}
 
-/* ==================== FOOTER ==================== */
-#footer {
-  background: var(--texto);
-  padding: 60px 40px 32px;
-  color: var(--blanco);
+/* ===== VIDEO MODAL ===== */
+#vmodal{
+  position:fixed;inset:0;z-index:9800;
+  background:rgba(0,0,0,.9);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+  opacity:0;visibility:hidden;transition:all .35s ease;
 }
-.footer-inner {
-  max-width: 1200px; margin: 0 auto;
+#vmodal.open{opacity:1;visibility:visible}
+.vm-inner{width:100%;max-width:920px;position:relative;transform:scale(.96);transition:transform .35s ease}
+#vmodal.open .vm-inner{transform:scale(1)}
+.vm-close{
+  position:absolute;top:-46px;right:0;
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.15);color:var(--blanco);
+  font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:var(--t);
 }
-.footer-top {
-  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-  gap: 48px; margin-bottom: 48px;
-  padding-bottom: 48px;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-.footer-brand .nav-logo { margin-bottom: 16px; }
-.footer-brand-desc { font-size: 14px; color: rgba(255,255,255,0.55); line-height: 1.8; max-width: 280px; }
-.footer-col h4 {
-  font-family: var(--font-display);
-  font-size: 13px; font-weight: 800;
-  letter-spacing: 1.5px; text-transform: uppercase;
-  color: var(--verde); margin-bottom: 18px;
-}
-.footer-col a {
-  display: block; font-size: 14px;
-  color: rgba(255,255,255,0.55);
-  margin-bottom: 10px; transition: var(--transition);
-}
-.footer-col a:hover { color: var(--blanco); padding-left: 6px; }
-.footer-bottom {
-  display: flex; align-items: center; justify-content: space-between;
-  flex-wrap: wrap; gap: 12px;
-}
-.footer-copy { font-size: 13px; color: rgba(255,255,255,0.4); }
-.footer-verde { color: var(--verde); font-weight: 600; }
+.vm-close:hover{background:rgba(255,255,255,.25);transform:rotate(90deg)}
+.vm-wrap{aspect-ratio:16/9;border-radius:var(--r);overflow:hidden;background:#000}
+.vm-wrap video{width:100%;height:100%;object-fit:contain}
 
-/* ==================== FLOATING ACTIONS ==================== */
-#floating-bar {
-  position: fixed; right: 20px; bottom: 24px; z-index: 800;
-  display: flex; flex-direction: column; gap: 10px;
-  align-items: flex-end;
+/* ===== DOCUMENTOS ===== */
+#docs{background:var(--gris-50)}
+.docs-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:18px}
+.doc-card{
+  background:var(--blanco);border:1px solid var(--gris-200);border-radius:var(--r);
+  padding:30px 26px;display:flex;flex-direction:column;
+  position:relative;overflow:hidden;transition:var(--t);
 }
-.float-btn {
-  width: 52px; height: 52px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-  transition: var(--transition); border: none;
-  overflow: hidden;
-  cursor: pointer;
+.doc-card::before{
+  content:'';position:absolute;top:0;left:0;bottom:0;width:4px;
+  background:linear-gradient(180deg,var(--azul),var(--verde));
 }
-.float-btn:hover { transform: scale(1.1) translateY(-2px); box-shadow: 0 12px 32px rgba(0,0,0,0.25); }
-.float-btn img { width: 52px; height: 52px; object-fit: cover; }
-.float-btn-wa { background: #25D366; }
-.float-btn-ig { background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045); }
-.float-join {
-  background: linear-gradient(135deg, var(--verde), var(--verde-dark));
-  color: var(--blanco);
-  font-family: var(--font-display);
-  font-size: 12px; font-weight: 800;
-  letter-spacing: 1px; text-transform: uppercase;
-  padding: 13px 20px; border-radius: 12px;
-  width: auto; border: none;
-  box-shadow: 0 8px 24px rgba(92,203,59,0.45);
-  display: flex; align-items: center; gap: 8px;
-  white-space: nowrap; cursor: pointer;
-  transition: var(--transition);
+.doc-card:hover{transform:translateY(-4px);box-shadow:var(--sh);border-color:transparent}
+.doc-ico{font-size:34px;margin-bottom:14px}
+.doc-type{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--verde-dk);margin-bottom:7px}
+.doc-title{font-family:var(--font-h);font-size:18px;font-weight:800;color:var(--negro);margin-bottom:10px;text-transform:uppercase}
+.doc-desc{font-size:13px;color:var(--gris-600);line-height:1.72;margin-bottom:22px;flex:1}
+.doc-btn{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--azul);color:var(--blanco);
+  font-weight:700;font-size:12px;padding:11px 20px;
+  border-radius:9px;transition:var(--t);align-self:flex-start;
 }
-.float-join:hover { transform: scale(1.04) translateY(-2px); }
+.doc-btn:hover{background:var(--azul-dk);transform:translateX(4px)}
+.doc-btn.verde{background:var(--verde)}
+.doc-btn.verde:hover{background:var(--verde-dk)}
 
-/* ==================== AUDIO PLAYER ==================== */
-#audio-bar {
-  position: fixed; bottom: 24px; left: 20px; z-index: 800;
+/* ===== CTA FINAL ===== */
+#cta{
+  background:linear-gradient(135deg,var(--azul) 0%,var(--azul-lt) 55%,var(--verde-dk) 100%);
+  padding:100px 48px;text-align:center;position:relative;overflow:hidden;
 }
-.audio-btn {
-  background: rgba(255,255,255,0.96);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--gris-200);
-  border-radius: 40px;
-  padding: 10px 20px;
-  display: flex; align-items: center; gap: 10px;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.12);
-  cursor: pointer; transition: var(--transition);
+#cta::before{
+  content:'';position:absolute;top:-80px;left:50%;transform:translateX(-50%);
+  width:500px;height:500px;background:rgba(255,255,255,.03);border-radius:50%;
 }
-.audio-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.18); }
-.audio-icon { font-size: 22px; }
-.audio-waves {
-  display: flex; align-items: center; gap: 2px;
-  height: 20px;
+.cta-logo{height:70px;margin:0 auto 28px;filter:brightness(0) invert(1)}
+.cta-h{font-family:var(--font-h);font-size:clamp(28px,4vw,52px);font-weight:900;color:var(--blanco);line-height:1.1;margin-bottom:14px;position:relative}
+.cta-p{font-size:17px;color:rgba(255,255,255,.8);max-width:540px;margin:0 auto 36px;line-height:1.75;position:relative}
+.cta-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;position:relative}
+.btn-cta-main{
+  background:var(--blanco);color:var(--azul);
+  font-weight:800;font-size:15px;padding:16px 36px;border-radius:13px;
+  box-shadow:0 8px 32px rgba(0,0,0,.2);transition:var(--t);border:none;
+  display:inline-flex;align-items:center;gap:8px;
 }
-.wave-bar {
-  width: 3px; background: var(--azul); border-radius: 2px;
-  animation: waveAnim 0.8s ease infinite alternate;
+.btn-cta-main:hover{transform:translateY(-3px);box-shadow:0 16px 48px rgba(0,0,0,.28)}
+.btn-cta-ghost{
+  background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.38);
+  color:var(--blanco);font-weight:700;font-size:15px;padding:14px 36px;border-radius:13px;
+  transition:var(--t);display:inline-flex;align-items:center;gap:8px;
 }
-.wave-bar:nth-child(1) { height: 8px; animation-delay: 0s; }
-.wave-bar:nth-child(2) { height: 14px; animation-delay: 0.15s; }
-.wave-bar:nth-child(3) { height: 18px; animation-delay: 0.3s; }
-.wave-bar:nth-child(4) { height: 12px; animation-delay: 0.45s; }
-.wave-bar:nth-child(5) { height: 8px; animation-delay: 0.6s; }
-.audio-waves.paused .wave-bar { animation-play-state: paused; }
-@keyframes waveAnim {
-  from { transform: scaleY(0.5); opacity: 0.5; }
-  to { transform: scaleY(1); opacity: 1; }
-}
-.audio-label { font-size: 12px; font-weight: 600; color: var(--azul); }
+.btn-cta-ghost:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.6);transform:translateY(-2px)}
 
-/* ==================== SCROLL ANIMATION ==================== */
-.reveal {
-  opacity: 0; transform: translateY(30px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
-}
-.reveal.visible { opacity: 1; transform: translateY(0); }
-.reveal-delay-1 { transition-delay: 0.1s; }
-.reveal-delay-2 { transition-delay: 0.2s; }
-.reveal-delay-3 { transition-delay: 0.3s; }
-.reveal-delay-4 { transition-delay: 0.4s; }
+/* ===== FOOTER ===== */
+#footer{background:var(--negro);padding:60px 48px 32px;color:var(--blanco)}
+.footer-in{max-width:1200px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:44px;padding-bottom:44px;border-bottom:1px solid rgba(255,255,255,.09)}
+.footer-brand-logo{height:44px;margin-bottom:16px;filter:brightness(0) invert(1)}
+.footer-brand-desc{font-size:13px;color:rgba(255,255,255,.5);line-height:1.85;max-width:280px}
+.footer-col h4{font-family:var(--font-h);font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:var(--verde);margin-bottom:16px}
+.footer-col a{display:block;font-size:13px;color:rgba(255,255,255,.5);margin-bottom:9px;transition:var(--t)}
+.footer-col a:hover{color:var(--blanco);padding-left:5px}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.footer-copy{font-size:12px;color:rgba(255,255,255,.35)}
+.footer-vc{color:var(--verde);font-weight:600}
+.footer-slogan{font-size:12px;color:rgba(255,255,255,.35);font-style:italic}
 
-/* ==================== GALLERY ==================== */
-#galeria { background: var(--gris-100); }
-.gallery-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+/* ===== FLOATING ===== */
+#fab{
+  position:fixed;right:18px;bottom:22px;z-index:800;
+  display:flex;flex-direction:column;gap:10px;align-items:flex-end;
 }
-.gallery-img {
-  border-radius: var(--radio);
-  overflow: hidden;
-  aspect-ratio: 4/3;
-  cursor: pointer;
-  transition: var(--transition);
+.fab-btn{
+  width:50px;height:50px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 22px rgba(0,0,0,.2);transition:var(--t);overflow:hidden;
 }
-.gallery-img:hover { transform: scale(1.02); box-shadow: 0 16px 48px rgba(0,0,0,0.15); }
-.gallery-img img {
-  width: 100%; height: 100%; object-fit: cover;
-  transition: transform 0.5s ease;
+.fab-btn:hover{transform:scale(1.1) translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.fab-btn img{width:50px;height:50px;object-fit:cover}
+.fab-join{
+  background:linear-gradient(135deg,var(--verde),var(--verde-dk));
+  color:var(--blanco);font-family:var(--font-h);font-size:11px;font-weight:800;
+  letter-spacing:1px;text-transform:uppercase;
+  padding:12px 18px;border-radius:12px;border:none;
+  box-shadow:0 8px 24px rgba(92,203,59,.45);
+  display:flex;align-items:center;gap:7px;cursor:pointer;transition:var(--t);
 }
-.gallery-img:hover img { transform: scale(1.06); }
+.fab-join:hover{transform:scale(1.04) translateY(-2px)}
 
-/* ==================== JINGLE SECTION ==================== */
-.jingle-strip {
-  background: linear-gradient(90deg, var(--azul-pale), var(--verde-pale));
-  padding: 32px 40px;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 24px; flex-wrap: wrap;
-  border-top: 3px solid var(--verde);
-  border-bottom: 3px solid var(--azul);
-}
-.jingle-text h3 {
-  font-family: var(--font-display);
-  font-size: 22px; font-weight: 800; color: var(--azul);
-  margin-bottom: 4px;
-}
-.jingle-text p { font-size: 14px; color: var(--gris-600); }
+/* ===== SCROLL REVEAL ===== */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .6s ease,transform .6s ease}
+.reveal.vis{opacity:1;transform:translateY(0)}
+.rd1{transition-delay:.1s}.rd2{transition-delay:.2s}.rd3{transition-delay:.3s}.rd4{transition-delay:.4s}
 
-/* ==================== RESPONSIVE ==================== */
-@media (max-width: 1024px) {
-  .footer-top { grid-template-columns: 1fr 1fr; }
-  .liderazgo-grid { grid-template-columns: 1fr 1fr; }
-  .alianza-banner { grid-template-columns: 1fr; text-align: center; }
-  .alianza-img { margin: 0 auto; }
+/* ===== RESPONSIVE ===== */
+@media(max-width:1024px){
+  .footer-top{grid-template-columns:1fr 1fr}
+  .lider-g{grid-template-columns:1fr 1fr}
+  .alianza{grid-template-columns:1fr;text-align:center}
+  .al-img{margin:0 auto}
 }
-@media (max-width: 768px) {
-  .section { padding: 70px 24px; }
-  #navbar { padding: 0 20px; }
-  .nav-links { display: none; }
-  .hamburger { display: flex; }
-  .stats-inner { grid-template-columns: 1fr 1fr; }
-  .liderazgo-grid { grid-template-columns: 1fr; max-width: 380px; margin: 0 auto 48px; }
-  .footer-top { grid-template-columns: 1fr; gap: 32px; }
-  .gallery-grid { grid-template-columns: 1fr 1fr; }
-  .hero-content { padding: 0 24px; }
-  .hero-btns { flex-direction: column; align-items: flex-start; }
-  .btn-primary, .btn-secondary { width: fit-content; }
-  .map-info-panel { width: 260px; }
-  .jingle-strip { flex-direction: column; text-align: center; }
+@media(max-width:768px){
+  .sec{padding:64px 24px}
+  #nav{padding:0 20px}
+  .nav-links{display:none}
+  .hamburger{display:flex}
+  .stats-inner{grid-template-columns:1fr 1fr}
+  .hero-content{padding:0 24px}
+  .hero-btns{flex-direction:column;align-items:flex-start}
+  .mapa-hdr{padding:0 24px 36px}
+  .map-panel{width:250px}
+  .lider-g{grid-template-columns:1fr;max-width:360px;margin:0 auto 44px}
+  .footer-top{grid-template-columns:1fr;gap:28px}
+  .gallery-g{grid-template-columns:1fr 1fr}
+  .gal-item:first-child{grid-column:span 2}
+  .qr-strip{flex-direction:column;padding:36px 24px;text-align:center}
+  .jingle-bar{padding:22px 24px;flex-direction:column;text-align:center}
+  #fab{right:10px;bottom:14px}
+  .alianza{padding:36px 28px}
 }
-@media (max-width: 480px) {
-  .stats-inner { grid-template-columns: 1fr; }
-  .gallery-grid { grid-template-columns: 1fr; }
-  .hero-h1 { font-size: 32px; }
-  #floating-bar { right: 12px; bottom: 16px; }
-  #audio-bar { left: 12px; bottom: 16px; }
+@media(max-width:480px){
+  .stats-inner{grid-template-columns:1fr}
+  .gallery-g{grid-template-columns:1fr}
+  .gal-item:first-child{grid-column:span 1;aspect-ratio:4/3}
+  .hero-h1{font-size:30px}
+  .qr-img-wrap{flex-direction:column}
+  .footer-top{grid-template-columns:1fr}
 }
-
-/* ==================== MOBILE NAV MENU ==================== */
-#mobile-nav {
-  position: fixed; inset: 0; z-index: 999;
-  background: rgba(0,30,80,0.97);
-  backdrop-filter: blur(20px);
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 8px;
-  transform: translateX(100%);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-#mobile-nav.open { transform: translateX(0); }
-.mnav-link {
-  font-family: var(--font-display);
-  font-size: 28px; font-weight: 800;
-  color: var(--blanco); text-transform: uppercase;
-  letter-spacing: 2px; padding: 12px 32px;
-  border-radius: 12px; transition: var(--transition);
-}
-.mnav-link:hover { color: var(--verde); background: rgba(255,255,255,0.05); }
-.mnav-close {
-  position: absolute; top: 24px; right: 24px;
-  width: 44px; height: 44px; border-radius: 50%;
-  background: rgba(255,255,255,0.1); border: none;
-  color: var(--blanco); font-size: 24px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: var(--transition);
-}
-.mnav-close:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
 </style>
 </head>
 <body>
 
 <!-- LOADER -->
 <div id="loader">
-  <div class="loader-logo">
-    <div class="loader-bar"></div>
-    <div class="loader-bar"></div>
-    <div class="loader-bar"></div>
-  </div>
-  <div class="loader-text">Concertación</div>
-  <div class="loader-sub">Cargando plataforma ciudadana...</div>
-  <div class="loader-progress"><div class="loader-progress-bar"></div></div>
+  <img class="ld-logo-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/logo%20concertacion%20sin%20fondo.png?raw=true" alt="Concertación">
+  <div class="ld-text">Cargando plataforma</div>
+  <div class="ld-bar"><div class="ld-fill"></div></div>
 </div>
 
 <!-- MOBILE NAV -->
-<nav id="mobile-nav" role="dialog" aria-label="Menú de navegación móvil">
-  <button class="mnav-close" onclick="closeMobileNav()" aria-label="Cerrar menú">✕</button>
-  <a class="mnav-link" href="#hero" onclick="closeMobileNav()">Inicio</a>
-  <a class="mnav-link" href="#pilares" onclick="closeMobileNav()">Pilares</a>
-  <a class="mnav-link" href="#mapa-section" onclick="closeMobileNav()">Venezuela</a>
-  <a class="mnav-link" href="#organizacion" onclick="closeMobileNav()">Organización</a>
-  <a class="mnav-link" href="#liderazgo" onclick="closeMobileNav()">Liderazgo</a>
-  <a class="mnav-link" href="#multimedia" onclick="closeMobileNav()">Multimedia</a>
-  <a class="mnav-link" href="#documentos" onclick="closeMobileNav()">Documentos</a>
-  <a class="mnav-link nav-cta" href="https://concertacion-ciudadana.online/registro" target="_blank" onclick="closeMobileNav()">Únete</a>
+<nav id="mnav" role="dialog" aria-modal="true">
+  <button class="mnav-close" onclick="closeMnav()" aria-label="Cerrar menú">✕</button>
+  <a class="mnav-link" href="#pilares" onclick="closeMnav()">Pilares</a>
+  <a class="mnav-link" href="#mapa-sec" onclick="closeMnav()">Venezuela</a>
+  <a class="mnav-link" href="#org" onclick="closeMnav()">Organización</a>
+  <a class="mnav-link" href="#liderazgo" onclick="closeMnav()">Liderazgo</a>
+  <a class="mnav-link" href="#multimedia" onclick="closeMnav()">Multimedia</a>
+  <a class="mnav-link" href="#docs" onclick="closeMnav()">Documentos</a>
+  <a class="mnav-link nl-cta" href="https://concertacion-ciudadana.online/registro" target="_blank" onclick="closeMnav()">Únete ↗</a>
 </nav>
 
 <!-- NAVBAR -->
-<header id="navbar" class="transparent" role="banner">
-  <div class="nav-logo">
-    <div class="nav-logo-bars">
-      <div class="nav-logo-bar nlb1"></div>
-      <div class="nav-logo-bar nlb2"></div>
-      <div class="nav-logo-bar nlb3"></div>
-    </div>
-    <span class="nav-logo-text">CONCERTACIÓN</span>
+<header id="nav" class="clear">
+  <div class="nav-brand">
+    <img class="nav-brand-logo" src="https://github.com/jhonmalorne/Concertacion/blob/main/Logo%20de%20concertacion.png?raw=true" alt="Concertación Ciudadana" height="38">
   </div>
-  <nav class="nav-links" role="navigation" aria-label="Navegación principal">
-    <a class="nav-link" href="#pilares">Pilares</a>
-    <a class="nav-link" href="#mapa-section">Venezuela</a>
-    <a class="nav-link" href="#organizacion">Organización</a>
-    <a class="nav-link" href="#liderazgo">Liderazgo</a>
-    <a class="nav-link" href="#multimedia">Multimedia</a>
-    <a class="nav-link" href="#documentos">Documentos</a>
-    <a class="nav-link nav-cta" href="https://concertacion-ciudadana.online/registro" target="_blank">Únete ↗</a>
+  <nav class="nav-links" aria-label="Navegación principal">
+    <a class="nl" href="#pilares">Pilares</a>
+    <a class="nl" href="#mapa-sec">Venezuela</a>
+    <a class="nl" href="#org">Organización</a>
+    <a class="nl" href="#liderazgo">Liderazgo</a>
+    <a class="nl" href="#multimedia">Multimedia</a>
+    <a class="nl" href="#docs">Documentos</a>
+    <a class="nl nl-cta" href="https://concertacion-ciudadana.online/registro" target="_blank" rel="noopener">Únete ↗</a>
   </nav>
-  <button class="hamburger" onclick="openMobileNav()" aria-label="Abrir menú">
+  <button class="hamburger" onclick="openMnav()" aria-label="Abrir menú">
     <span></span><span></span><span></span>
   </button>
 </header>
 
 <!-- HERO -->
-<section id="hero" aria-label="Portada principal">
+<section id="hero" aria-label="Portada">
   <div class="hero-bg"></div>
-  <div class="hero-overlay"></div>
-  <div class="hero-particles" id="hero-particles"></div>
+  <div class="hero-ov"></div>
+  <div class="hero-particles" id="hptcl"></div>
   <div class="hero-content">
     <div class="hero-badge">
-      <div class="hero-badge-dot"></div>
-      <span class="hero-badge-text">Movimiento ciudadano activo · Venezuela</span>
+      <div class="hero-dot"></div>
+      <span class="hero-badge-txt">Movimiento ciudadano · Venezuela</span>
     </div>
-    <h1 class="hero-h1">Venezuela necesita<br>instituciones, <span class="verde">orden</span><br>y ciudadanía.</h1>
+    <h1 class="hero-h1">
+      Venezuela necesita<br>
+      instituciones, <em>orden</em><br>
+      y ciudadanía.
+    </h1>
     <p class="hero-slogan">"Orden para ser libres, unión para prosperar."</p>
     <p class="hero-sub">La plataforma ciudadana para reconstruir Venezuela desde cada estado, municipio y parroquia. Concertación Ciudadana construye el futuro desde las comunidades.</p>
     <div class="hero-btns">
-      <a class="btn-primary" href="https://concertacion-ciudadana.online/registro" target="_blank">
-        <span>✦</span> Únete ahora
-      </a>
-      <a class="btn-secondary" href="#mapa-section">
-        <span>🗺</span> Explorar Venezuela
-      </a>
-      <a class="btn-secondary" href="#organizacion">
-        <span>⚙</span> Ver Organización
-      </a>
+      <a class="btn-p" href="https://concertacion-ciudadana.online/registro" target="_blank" rel="noopener">✦ Únete ahora</a>
+      <a class="btn-s" href="#mapa-sec">🗺 Explorar Venezuela</a>
+      <a class="btn-s" href="#org">⚙ Ver Organización</a>
     </div>
   </div>
   <div class="hero-scroll">
-    <div class="scroll-line"></div>
+    <div class="scroll-ln"></div>
     <span>Descubre</span>
   </div>
 </section>
 
-<!-- STATS BAR -->
+<!-- STATS -->
 <div class="stats-bar">
   <div class="stats-inner">
     <div class="stat-item reveal">
-      <div class="stat-num"><span class="counter" data-target="23">0</span><span class="verde">+</span></div>
-      <div class="stat-label">Estados activos</div>
+      <div class="stat-num"><span class="cnt" data-t="23">0</span><sup>+</sup></div>
+      <div class="stat-lbl">Estados en acción</div>
     </div>
-    <div class="stat-item reveal reveal-delay-1">
-      <div class="stat-num"><span class="counter" data-target="335">0</span></div>
-      <div class="stat-label">Municipios organizados</div>
+    <div class="stat-item reveal rd1">
+      <div class="stat-num"><span class="cnt" data-t="335">0</span></div>
+      <div class="stat-lbl">Municipios de Venezuela</div>
     </div>
-    <div class="stat-item reveal reveal-delay-2">
-      <div class="stat-num"><span class="counter" data-target="1200">0</span><span class="verde">+</span></div>
-      <div class="stat-label">Líderes focales</div>
+    <div class="stat-item reveal rd2">
+      <div class="stat-num"><span class="cnt" data-t="1200">0</span><sup>+</sup></div>
+      <div class="stat-lbl">Líderes ciudadanos</div>
     </div>
-    <div class="stat-item reveal reveal-delay-3">
-      <div class="stat-num"><span class="counter" data-target="5000">0</span><span class="verde">+</span></div>
-      <div class="stat-label">Militantes registrados</div>
+    <div class="stat-item reveal rd3">
+      <div class="stat-num"><span class="cnt" data-t="5000">0</span><sup>+</sup></div>
+      <div class="stat-lbl">Venezolanos comprometidos</div>
     </div>
   </div>
 </div>
 
 <!-- PILARES -->
-<section id="pilares" class="section">
-  <div class="section-inner">
-    <div class="section-label reveal">Ideario político</div>
-    <h2 class="section-title reveal reveal-delay-1">Nuestros <span class="azul">pilares</span> para Venezuela</h2>
-    <p class="section-desc reveal reveal-delay-2">Inspirados en el Humanismo Cristiano, construimos una plataforma política moderna basada en valores sólidos y visión de futuro para toda la nación.</p>
-    <div class="pilares-grid">
-      <div class="pilar-card reveal reveal-delay-1">
-        <div class="pilar-icon">✝️</div>
+<section id="pilares" class="sec">
+  <div class="sec-inner">
+    <div class="sec-tag reveal">Ideario político</div>
+    <h2 class="sec-h reveal rd1">Nuestros <span class="az">pilares</span> para Venezuela</h2>
+    <p class="sec-p reveal rd2">Inspirados en el Humanismo Cristiano, construimos una plataforma moderna basada en valores sólidos y visión de futuro para toda la nación venezolana.</p>
+    <div class="pilares-g">
+      <div class="pilar-card reveal rd1">
+        <div class="pilar-ico">✝️</div>
         <div class="pilar-h">Humanismo Cristiano</div>
-        <p class="pilar-p">La persona es el centro de toda acción política. Defendemos la dignidad humana desde la concepción hasta la muerte natural.</p>
+        <p class="pilar-p">La persona es el centro de toda acción política. Defendemos la dignidad humana y la política como servicio, no como dominación.</p>
       </div>
-      <div class="pilar-card reveal reveal-delay-2">
-        <div class="pilar-icon">🏠</div>
+      <div class="pilar-card reveal rd2">
+        <div class="pilar-ico">🏠</div>
         <div class="pilar-h">La Familia Primero</div>
-        <p class="pilar-p">La familia es la raíz de toda ciudadanía virtuosa. Impulsamos libertad educativa plena para cada hogar venezolano.</p>
+        <p class="pilar-p">La familia es la raíz de toda ciudadanía virtuosa. Impulsamos libertad educativa plena para que cada hogar sea motor de sus propios sueños.</p>
       </div>
-      <div class="pilar-card reveal reveal-delay-3">
-        <div class="pilar-icon">📈</div>
+      <div class="pilar-card reveal rd3">
+        <div class="pilar-ico">📈</div>
         <div class="pilar-h">Libertad Económica</div>
-        <p class="pilar-p">"Tanto mercado como sea posible, tanto Estado como sea necesario." Propiedad privada como base de la libertad.</p>
+        <p class="pilar-p">"Tanto mercado como sea posible, tanto Estado como sea necesario." Propiedad privada y emprendimiento como bases de la libertad.</p>
       </div>
-      <div class="pilar-card reveal reveal-delay-1">
-        <div class="pilar-icon">⚖️</div>
+      <div class="pilar-card reveal rd1">
+        <div class="pilar-ico">⚖️</div>
         <div class="pilar-h">Estado de Derecho</div>
-        <p class="pilar-p">Sin ley no hay libertad. Separación de poderes, seguridad ciudadana y fortalecimiento institucional.</p>
+        <p class="pilar-p">Sin ley no hay libertad. Separación de poderes, seguridad ciudadana firme y fortalecimiento institucional frente al autoritarismo.</p>
       </div>
-      <div class="pilar-card reveal reveal-delay-2">
-        <div class="pilar-icon">🌱</div>
+      <div class="pilar-card reveal rd2">
+        <div class="pilar-ico">🌱</div>
         <div class="pilar-h">Organización Ciudadana</div>
-        <p class="pilar-p">La fuerza del cambio reside en la parroquia. Cada vecino es protagonista de la transformación nacional.</p>
+        <p class="pilar-p">La fuerza del cambio reside en la parroquia. Empoderamos al ciudadano en su entorno inmediato como protagonista de la transformación.</p>
       </div>
-      <div class="pilar-card reveal reveal-delay-3">
-        <div class="pilar-icon">🌟</div>
+      <div class="pilar-card reveal rd3">
+        <div class="pilar-ico">🌟</div>
         <div class="pilar-h">Ética Pública</div>
-        <p class="pilar-p">La gestión pública debe ser sinónimo de impecabilidad. Honestidad como estándar obligatorio en todas las instituciones.</p>
+        <p class="pilar-p">La gestión pública debe ser sinónimo de impecabilidad. Honestidad como estándar obligatorio en todas las instituciones venezolanas.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- MAPA INTERACTIVO -->
-<section id="mapa-section" aria-label="Mapa interactivo de Venezuela">
-  <div class="mapa-header">
-    <div class="section-label reveal">Organización territorial</div>
-    <h2 class="section-title reveal reveal-delay-1">Venezuela estado por <span class="verde">estado</span></h2>
-    <p class="section-desc reveal reveal-delay-2">Haz clic en cualquier estado para explorar su estructura organizativa, municipios activos y coordinaciones de Concertación Ciudadana.</p>
+<!-- MAPA -->
+<section id="mapa-sec" aria-label="Mapa Venezuela" style="background:var(--blanco);padding-top:80px">
+  <div class="mapa-hdr">
+    <div class="sec-tag reveal">Presencia territorial</div>
+    <h2 class="sec-h reveal rd1">Trabajando por <span class="vd">toda Venezuela</span></h2>
+    <p class="sec-p reveal rd2" style="margin-bottom:0">Concertación Ciudadana está presente en cada rincón del territorio nacional, construyendo juntos el camino hacia una Venezuela libre, ordenada y próspera. Haz clic en un estado para conocer más.</p>
   </div>
-  <div id="map-container">
+  <div id="map-wrap">
     <div id="map" role="application" aria-label="Mapa interactivo de Venezuela"></div>
-    <div class="map-info-panel" id="map-info">
-      <div class="mip-header">
-        <div class="mip-estado" id="mip-estado-name">Estado</div>
-        <div class="mip-sub" id="mip-estado-region">Venezuela</div>
+    <div class="map-panel" id="mpanel">
+      <div class="mp-head">
+        <div class="mp-estado" id="mp-name">Estado</div>
+        <div class="mp-sub">Venezuela · Concertación Ciudadana</div>
       </div>
-      <div class="mip-body">
-        <div class="mip-stat">
-          <span class="mip-stat-label">Municipios</span>
-          <span class="mip-stat-val" id="mip-municipios">—</span>
+      <div class="mp-body">
+        <div class="mp-row">
+          <span class="mp-lbl">Municipios</span>
+          <span class="mp-val" id="mp-mun">—</span>
         </div>
-        <div class="mip-stat">
-          <span class="mip-stat-label">Coordinaciones</span>
-          <span class="mip-stat-val" id="mip-coord">Activas</span>
+        <div class="mp-row">
+          <span class="mp-lbl">Parroquias</span>
+          <span class="mp-val" id="mp-par">—</span>
         </div>
-        <div class="mip-stat">
-          <span class="mip-stat-label">Líderes focales</span>
-          <span class="mip-stat-val" id="mip-lideres">—</span>
+        <div class="mp-row">
+          <span class="mp-lbl">Presencia</span>
+          <span class="mp-val" style="color:var(--verde)">✓ Activa</span>
         </div>
-        <div class="mip-stat">
-          <span class="mip-stat-label">Estado organizativo</span>
-          <span class="mip-stat-val" style="color:var(--verde)">✓ Activo</span>
+        <div class="mp-msg">
+          🇻🇪 Concertación trabaja por el bienestar y la libertad de cada venezolano en este estado.
         </div>
-        <button class="mip-btn" onclick="alert('Solicita información sobre tu estado escribiendo al canal de WhatsApp de Concertación.')">Ver estructura →</button>
+        <button class="mp-close-btn" onclick="closePanel()">Cerrar panel</button>
       </div>
     </div>
     <div class="map-legend">
-      <div class="legend-title">Leyenda</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#0047AB"></div> Estado con coordinación</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#5CCB3B"></div> Municipio activo</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#D4DAEB"></div> Sin información</div>
+      <div class="ml-title">Leyenda</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#0047AB;opacity:.7"></div>Estado venezolano</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#5CCB3B;opacity:.7"></div>Municipios</div>
+      <div class="ml-item"><div class="ml-dot" style="background:#0047AB"></div>Seleccionado</div>
     </div>
   </div>
 </section>
 
 <!-- ORGANIZACIÓN -->
-<section id="organizacion" class="section">
-  <div class="section-inner">
-    <div class="section-label reveal">Estructura nacional</div>
-    <h2 class="section-title reveal reveal-delay-1">Organización <span class="azul">territorial</span></h2>
-    <p class="section-desc reveal reveal-delay-2">Una estructura sólida que conecta cada nivel de la geografía venezolana, desde la Dirección Nacional hasta cada parroquia.</p>
-    <div class="org-grid">
-      <div class="org-card reveal reveal-delay-1">
-        <div class="org-level">Nivel 1</div>
-        <div class="org-icon-wrap">🏛️</div>
+<section id="org" class="sec">
+  <div class="sec-inner">
+    <div class="sec-tag reveal">Estructura nacional</div>
+    <h2 class="sec-h reveal rd1">Organización <span class="az">territorial</span></h2>
+    <p class="sec-p reveal rd2">Una estructura sólida que conecta cada nivel de la geografía venezolana, desde la Dirección Nacional hasta cada parroquia, con líderes comprometidos con el cambio.</p>
+    <div class="org-g">
+      <div class="org-card reveal rd1">
+        <div class="org-lvl">Nivel 1</div>
+        <div class="org-ico">🏛️</div>
         <div class="org-title">Dirección Nacional</div>
-        <p class="org-desc">Coordinación estratégica nacional bajo el liderazgo del Dr. César Pérez Vivas. Define la visión y línea política del movimiento.</p>
+        <p class="org-desc">Coordinación estratégica bajo el liderazgo del Dr. César Pérez Vivas. Define la visión y la línea política del movimiento a nivel nacional.</p>
       </div>
-      <div class="org-card reveal reveal-delay-2">
-        <div class="org-level">Nivel 2</div>
-        <div class="org-icon-wrap">🗺️</div>
-        <div class="org-title">Equipos Regionales</div>
-        <p class="org-desc">23 coordinaciones estadales que articulan la agenda política y organizativa en cada estado de Venezuela.</p>
+      <div class="org-card reveal rd2">
+        <div class="org-lvl">Nivel 2</div>
+        <div class="org-ico">🗺️</div>
+        <div class="org-title">Equipos Estadales</div>
+        <p class="org-desc">Coordinaciones en los 23 estados que articulan la agenda política y organizativa, conectando el liderazgo nacional con las realidades regionales.</p>
       </div>
-      <div class="org-card reveal reveal-delay-3">
-        <div class="org-level">Nivel 3</div>
-        <div class="org-icon-wrap">🏙️</div>
+      <div class="org-card reveal rd3">
+        <div class="org-lvl">Nivel 3</div>
+        <div class="org-ico">🏙️</div>
         <div class="org-title">Equipos Municipales</div>
-        <p class="org-desc">Representación activa en los 335 municipios del país, con líderes focales que conectan con la comunidad directamente.</p>
+        <p class="org-desc">Presencia en los 335 municipios de Venezuela con líderes focales que conectan directamente con las necesidades y aspiraciones de la comunidad.</p>
       </div>
-      <div class="org-card reveal reveal-delay-4">
-        <div class="org-level">Nivel 4</div>
-        <div class="org-icon-wrap">🏘️</div>
+      <div class="org-card reveal rd4">
+        <div class="org-lvl">Nivel 4</div>
+        <div class="org-ico">🏘️</div>
         <div class="org-title">Equipos Parroquiales</div>
-        <p class="org-desc">La base del movimiento. Cada parroquia tiene su equipo local que moviliza, organiza y representa a los ciudadanos.</p>
+        <p class="org-desc">La base del movimiento. Cada parroquia tiene su equipo local que moviliza, organiza y representa a los ciudadanos en su entorno más cercano.</p>
       </div>
     </div>
-    <div class="stats-counters">
-      <div class="counter-card reveal">
-        <div class="counter-num"><span class="counter" data-target="23">0</span></div>
-        <div class="counter-label">Estados activos</div>
+    <div class="counters-g">
+      <div class="cnt-card reveal">
+        <div class="cnt-num"><span class="cnt" data-t="23">0</span></div>
+        <div class="cnt-lbl">Estados trabajando</div>
       </div>
-      <div class="counter-card reveal reveal-delay-1">
-        <div class="counter-num"><span class="counter" data-target="335">0</span></div>
-        <div class="counter-label">Municipios organizados</div>
+      <div class="cnt-card reveal rd1">
+        <div class="cnt-num"><span class="cnt" data-t="335">0</span></div>
+        <div class="cnt-lbl">Municipios de Venezuela</div>
       </div>
-      <div class="counter-card reveal reveal-delay-2">
-        <div class="counter-num"><span class="counter" data-target="1200">0</span>+</div>
-        <div class="counter-label">Líderes focales</div>
+      <div class="cnt-card reveal rd2">
+        <div class="cnt-num"><span class="cnt" data-t="1200">0</span>+</div>
+        <div class="cnt-lbl">Líderes ciudadanos</div>
       </div>
-      <div class="counter-card reveal reveal-delay-3">
-        <div class="counter-num"><span class="counter" data-target="800">0</span>+</div>
-        <div class="counter-label">Equipos parroquiales</div>
+      <div class="cnt-card reveal rd3">
+        <div class="cnt-num"><span class="cnt" data-t="800">0</span>+</div>
+        <div class="cnt-lbl">Equipos parroquiales</div>
       </div>
-      <div class="counter-card reveal reveal-delay-4">
-        <div class="counter-num"><span class="counter" data-target="5000">0</span>+</div>
-        <div class="counter-label">Juventud organizada</div>
+      <div class="cnt-card reveal rd4">
+        <div class="cnt-num"><span class="cnt" data-t="5000">0</span>+</div>
+        <div class="cnt-lbl">Venezolanos registrados</div>
       </div>
     </div>
   </div>
 </section>
 
 <!-- LIDERAZGO -->
-<section id="liderazgo" class="section">
-  <div class="section-inner">
-    <div class="section-label reveal">Nuestros líderes</div>
-    <h2 class="section-title reveal reveal-delay-1">Liderazgo con <span class="verde">trayectoria</span></h2>
-    <p class="section-desc reveal reveal-delay-2">Hombres y mujeres comprometidos con la reconstrucción democrática de Venezuela, guiados por el ejemplo y la honestidad.</p>
-    <div class="liderazgo-grid">
-      <div class="lider-card reveal reveal-delay-1">
+<section id="liderazgo" class="sec">
+  <div class="sec-inner">
+    <div class="sec-tag reveal">Nuestros líderes</div>
+    <h2 class="sec-h reveal rd1">Liderazgo con <span class="vd">trayectoria</span></h2>
+    <p class="sec-p reveal rd2">Comprometidos con la reconstrucción democrática de Venezuela, guiados por el ejemplo, la honestidad y el servicio al pueblo.</p>
+    <div class="lider-g">
+      <div class="lider-card reveal rd1">
         <img class="lider-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/Screenshot_1.jpg?raw=true" alt="Dr. César Pérez Vivas" loading="lazy">
-        <div class="lider-overlay"></div>
+        <div class="lider-ov"></div>
         <div class="lider-info">
           <div class="lider-badge">Presidente del Movimiento</div>
-          <div class="lider-nombre">Dr. César Pérez Vivas</div>
+          <div class="lider-name">Dr. César Pérez Vivas</div>
           <div class="lider-cargo">Dirigente Demócrata Cristiano · Ex Gobernador del Táchira</div>
           <div class="lider-quote">"Orden para ser libres, unión para prosperar y valores para trascender."</div>
         </div>
       </div>
-      <div class="lider-card reveal reveal-delay-2">
-        <img class="lider-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/Screenshot_2.jpg?raw=true" alt="Dr. César Pérez Vivas — Democracia" loading="lazy">
-        <div class="lider-overlay"></div>
+      <div class="lider-card reveal rd2">
+        <img class="lider-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/Screenshot_2.jpg?raw=true" alt="César Pérez Vivas — Venezuela Democracia" loading="lazy">
+        <div class="lider-ov"></div>
         <div class="lider-info">
           <div class="lider-badge">Democracia Plena</div>
-          <div class="lider-nombre">Venezuela quiere<br>Full Democracia</div>
-          <div class="lider-cargo">Con María Corina Machado</div>
-          <div class="lider-quote">"Venezuela merece ser nuevamente un referente de respeto y libertad."</div>
+          <div class="lider-name">Venezuela quiere<br>Full Democracia</div>
+          <div class="lider-cargo">Junto a María Corina Machado</div>
+          <div class="lider-quote">"Venezuela merece ser nuevamente un referente de respeto y libertad para toda América."</div>
         </div>
       </div>
-      <div class="lider-card reveal reveal-delay-3">
-        <img class="lider-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/familia%20completa.jpg?raw=true" alt="César Pérez Vivas con la bandera de Venezuela" loading="lazy">
-        <div class="lider-overlay"></div>
+      <div class="lider-card reveal rd3">
+        <img class="lider-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/familia%20completa.jpg?raw=true" alt="César Pérez Vivas con la bandera venezolana" loading="lazy">
+        <div class="lider-ov"></div>
         <div class="lider-info">
           <div class="lider-badge">Unidad Nacional</div>
-          <div class="lider-nombre">Con la Bandera<br>de Venezuela</div>
-          <div class="lider-cargo">Compromiso con la patria</div>
-          <div class="lider-quote">"El futuro se construye hoy, desde cada comunidad, desde cada parroquia."</div>
+          <div class="lider-name">Con la Bandera<br>de Venezuela</div>
+          <div class="lider-cargo">Compromiso irrenunciable con la patria</div>
+          <div class="lider-quote">"El futuro se construye hoy, desde cada comunidad, desde cada parroquia venezolana."</div>
         </div>
       </div>
     </div>
     <!-- ALIANZA BANNER -->
-    <div class="alianza-banner reveal">
-      <div class="alianza-text">
-        <div class="section-label">Alianza Democrática</div>
-        <div class="alianza-title">Junto a María Corina Machado por la reconstrucción nacional</div>
-        <p class="alianza-desc">Concertación Ciudadana es el espacio organizativo que articula la lucha democrática junto al liderazgo opositor venezolano. Somos la mejor alianza para recuperar Venezuela con organización territorial real, desde las comunidades hasta la Dirección Nacional.</p>
+    <div class="alianza reveal">
+      <div>
+        <div class="sec-tag al-tag">Alianza democrática</div>
+        <div class="al-h">Junto a María Corina Machado<br>por la reconstrucción nacional</div>
+        <p class="al-p">Concertación Ciudadana es el espacio organizativo que articula la lucha democrática venezolana. Somos la mejor alianza para recuperar Venezuela con organización territorial real, desde las comunidades hasta la Dirección Nacional. No basta un cambio de mando — proponemos una reingeniería del Estado.</p>
       </div>
-      <img class="alianza-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/cesar%20perez%20vivas%20en%20mesa.jpg?raw=true" alt="Dr. César Pérez Vivas en Panamá" loading="lazy">
+      <img class="al-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/cesar%20perez%20vivas%20en%20mesa.jpg?raw=true" alt="César Pérez Vivas en Panamá" loading="lazy">
     </div>
   </div>
 </section>
 
-<!-- JINGLE STRIP -->
-<div class="jingle-strip">
-  <div class="jingle-text">
-    <h3>🎵 Jingle de Concertación</h3>
-    <p>Escucha el himno del movimiento ciudadano venezolano</p>
+<!-- QR / REGISTRO -->
+<div class="qr-strip">
+  <div class="qr-txt">
+    <h3>📱 Únete a Concertación Ciudadana</h3>
+    <p>Regístrate en nuestra plataforma digital oficial. Escanea el QR con tu teléfono o haz clic en el botón para acceder directamente al formulario de registro.</p>
   </div>
-  <div id="audio-bar">
-    <button class="audio-btn" onclick="toggleAudio()" aria-label="Reproducir o pausar el jingle de Concertación">
-      <span class="audio-icon">🎵</span>
-      <div class="audio-waves paused" id="audio-waves">
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-      </div>
-      <span class="audio-label" id="audio-label">Escuchar Jingle</span>
-    </button>
+  <div class="qr-img-wrap">
+    <img class="qr-img" src="https://github.com/jhonmalorne/Concertacion/blob/main/QR.jpg?raw=true" alt="QR Código de registro en Concertación">
+    <div class="qr-btn">
+      <a class="qr-link" href="https://concertacion-ciudadana.online/registro" target="_blank" rel="noopener">✦ Registrarme ahora ↗</a>
+      <span class="qr-note">Escanea el QR o haz clic arriba</span>
+    </div>
   </div>
+</div>
+
+<!-- JINGLE -->
+<div class="jingle-bar">
+  <div class="jingle-info">
+    <div class="jingle-disc" id="jdisc">🎵</div>
+    <div class="jingle-txt">
+      <h4>Jingle de Concertación</h4>
+      <p>El himno del movimiento ciudadano venezolano</p>
+    </div>
+  </div>
+  <button class="jingle-btn" onclick="toggleJingle()" id="jbtn" aria-label="Reproducir o pausar el jingle">
+    <div class="jw paused" id="jwaves">
+      <div class="jw-b"></div><div class="jw-b"></div><div class="jw-b"></div>
+      <div class="jw-b"></div><div class="jw-b"></div>
+    </div>
+    <span id="jlbl">Escuchar Jingle</span>
+  </button>
   <audio id="jingle" src="https://github.com/jhonmalorne/Concertacion/blob/main/jingle%20sonido.mp3?raw=true" preload="none"></audio>
 </div>
 
 <!-- GALERÍA -->
-<section id="galeria" class="section">
-  <div class="section-inner">
-    <div class="section-label reveal">Presencia territorial</div>
-    <h2 class="section-title reveal reveal-delay-1">Concertación en <span class="azul">todo Venezuela</span></h2>
-    <p class="section-desc reveal reveal-delay-2">Nuestro movimiento está presente en cada rincón del país, organizando comunidades y construyendo el futuro democrático.</p>
-    <div class="gallery-grid">
-      <div class="gallery-img reveal reveal-delay-1">
+<section id="galeria" class="sec">
+  <div class="sec-inner">
+    <div class="sec-tag reveal">Presencia territorial</div>
+    <h2 class="sec-h reveal rd1">Concertación en <span class="az">todo Venezuela</span></h2>
+    <p class="sec-p reveal rd2">Nuestro movimiento está presente en cada rincón del país, construyendo el futuro democrático desde las comunidades.</p>
+    <div class="gallery-g">
+      <div class="gal-item reveal rd1">
         <img src="https://github.com/jhonmalorne/Concertacion/blob/main/ChatGPT%20Image%2027%20abr%202026%2010_05_41.png?raw=true" alt="Concertación Ciudadana" loading="lazy">
       </div>
-      <div class="gallery-img reveal reveal-delay-2">
+      <div class="gal-item reveal rd2">
         <img src="https://github.com/jhonmalorne/Concertacion/blob/main/Imagen%20superior.jpg?raw=true" alt="Guía Concertación" loading="lazy">
       </div>
-      <div class="gallery-img reveal reveal-delay-3">
-        <img src="https://github.com/jhonmalorne/Concertacion/blob/main/concertacion%20apure.jpg?raw=true" alt="Concertación en Apure" loading="lazy">
+      <div class="gal-item reveal rd1">
+        <img src="https://github.com/jhonmalorne/Concertacion/blob/main/concertacion%20apure.jpg?raw=true" alt="Concertación Apure" loading="lazy">
       </div>
-      <div class="gallery-img reveal reveal-delay-1">
-        <img src="https://github.com/jhonmalorne/Concertacion/blob/main/concertacion%20villa%20de%20cura.jpg?raw=true" alt="Concertación en Villa de Cura" loading="lazy">
+      <div class="gal-item reveal rd2">
+        <img src="https://github.com/jhonmalorne/Concertacion/blob/main/concertacion%20villa%20de%20cura.jpg?raw=true" alt="Concertación Villa de Cura" loading="lazy">
       </div>
-      <div class="gallery-img reveal reveal-delay-2">
-        <img src="https://github.com/jhonmalorne/Concertacion/blob/main/Equipo_Municipal_Puerto_cabello_HD.png?raw=true" alt="Equipo Municipal Puerto Cabello" loading="lazy">
+      <div class="gal-item reveal rd3">
+        <img src="https://github.com/jhonmalorne/Concertacion/blob/main/Equipo_Municipal_Puerto_cabello_HD.png?raw=true" alt="Puerto Cabello" loading="lazy">
       </div>
-      <div class="gallery-img reveal reveal-delay-3">
-        <img src="https://github.com/jhonmalorne/Concertacion/blob/main/mapadevenezuela.png?raw=true" alt="Venezuela" loading="lazy" style="object-fit:contain; background:var(--azul-pale); padding:20px;">
+      <div class="gal-item reveal rd4">
+        <img src="https://github.com/jhonmalorne/Concertacion/blob/main/cesar%20perez%20vivas%20en%20mesa.jpg?raw=true" alt="César Pérez Vivas" loading="lazy">
       </div>
     </div>
   </div>
 </section>
 
 <!-- MULTIMEDIA -->
-<section id="multimedia" class="section">
-  <div class="section-inner">
-    <div class="section-label reveal">Centro multimedia</div>
-    <h2 class="section-title reveal reveal-delay-1">Concertación en <span class="verde">acción</span></h2>
-    <p class="section-desc reveal reveal-delay-2">Testimonios, actividades y eventos del movimiento ciudadano en toda Venezuela. Haz clic en cualquier tarjeta para ver el video.</p>
-    <div class="media-grid">
-      <div class="media-card reveal reveal-delay-1" onclick="openVideo('https://github.com/jhonmalorne/Concertacion/blob/main/Tachira.mp4?raw=true', 'Concertación en Táchira')">
+<section id="multimedia" class="sec" style="background:var(--gris-50)">
+  <div class="sec-inner">
+    <div class="sec-tag reveal">Centro multimedia</div>
+    <h2 class="sec-h reveal rd1">Concertación en <span class="vd">acción</span></h2>
+    <p class="sec-p reveal rd2">Testimonios, actividades regionales y mensajes del movimiento ciudadano en toda Venezuela. Haz clic en cualquier video para verlo.</p>
+    <div class="media-g">
+      <!-- Video 1 -->
+      <div class="media-card reveal rd1" onclick="openVid('https://github.com/jhonmalorne/Concertacion/blob/main/Tachira.mp4?raw=true')">
         <div class="media-thumb">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#0047AB,#1A6FE0);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
-            <span style="font-size:48px;">🏔️</span>
-            <span style="color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;">Estado Táchira</span>
+          <div class="media-bg" style="background:linear-gradient(135deg,#003380,#0047AB)">
+            <span class="ico">🏔️</span><span class="lbl">TÁCHIRA</span>
           </div>
-          <div class="media-play"><div class="play-btn"><div class="play-triangle"></div></div></div>
+          <div class="media-play-ov"><div class="play-circle"><div class="play-tri"></div></div></div>
         </div>
         <div class="media-body">
           <div class="media-tag">Estado Táchira</div>
           <div class="media-title">Organización en el Táchira</div>
-          <p class="media-desc">Actividades de organización territorial y movilización ciudadana en el estado Táchira.</p>
+          <p class="media-desc">Actividades de organización ciudadana y movilización en el estado Táchira.</p>
         </div>
       </div>
-      <div class="media-card reveal reveal-delay-2" onclick="openVideo('https://github.com/jhonmalorne/Concertacion/blob/main/video%20carabobo%20y%20Bejuma.mp4?raw=true', 'Carabobo y Bejuma')">
+      <!-- Video 2 -->
+      <div class="media-card reveal rd2" onclick="openVid('https://github.com/jhonmalorne/Concertacion/blob/main/video%20carabobo%20y%20Bejuma.mp4?raw=true')">
         <div class="media-thumb">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#1A6024,#5CCB3B);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
-            <span style="font-size:48px;">🌿</span>
-            <span style="color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;">Carabobo · Bejuma</span>
+          <div class="media-bg" style="background:linear-gradient(135deg,#1A6024,#5CCB3B)">
+            <span class="ico">🌿</span><span class="lbl">CARABOBO · BEJUMA</span>
           </div>
-          <div class="media-play"><div class="play-btn"><div class="play-triangle"></div></div></div>
+          <div class="media-play-ov"><div class="play-circle"><div class="play-tri"></div></div></div>
         </div>
         <div class="media-body">
           <div class="media-tag">Carabobo · Bejuma</div>
           <div class="media-title">Visita Regional Carabobo</div>
-          <p class="media-desc">Los equipos regionales de Carabobo y Bejuma en acción. Organización desde las bases.</p>
+          <p class="media-desc">Equipos regionales de Carabobo en acción. Organización desde las bases comunitarias.</p>
         </div>
       </div>
-      <div class="media-card reveal reveal-delay-3" onclick="openVideo('https://github.com/jhonmalorne/Concertacion/blob/main/Daniel%20Rodas.mp4?raw=true', 'Daniel Rodas')">
+      <!-- Video 3 -->
+      <div class="media-card reveal rd3" onclick="openVid('https://github.com/jhonmalorne/Concertacion/blob/main/Daniel%20Rodas.mp4?raw=true')">
         <div class="media-thumb">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#003080,#0047AB);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
-            <span style="font-size:48px;">🎙️</span>
-            <span style="color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;">Daniel Rodas</span>
+          <div class="media-bg" style="background:linear-gradient(135deg,#003380,#1A4FA0)">
+            <span class="ico">🎙️</span><span class="lbl">DANIEL RODAS</span>
           </div>
-          <div class="media-play"><div class="play-btn"><div class="play-triangle"></div></div></div>
+          <div class="media-play-ov"><div class="play-circle"><div class="play-tri"></div></div></div>
         </div>
         <div class="media-body">
           <div class="media-tag">Liderazgo</div>
           <div class="media-title">Daniel Rodas</div>
-          <p class="media-desc">Declaraciones y análisis político del liderazgo de Concertación Ciudadana.</p>
+          <p class="media-desc">Mensaje y análisis político del liderazgo de Concertación Ciudadana en Venezuela.</p>
         </div>
       </div>
-      <div class="media-card reveal reveal-delay-1" onclick="openVideo('https://github.com/jhonmalorne/Concertacion/blob/main/Jacio%20Turaren.mp4?raw=true', 'Jacio Turaren')">
+      <!-- Video 4 -->
+      <div class="media-card reveal rd1" onclick="openVid('https://github.com/jhonmalorne/Concertacion/blob/main/Jacio%20Turaren.mp4?raw=true')">
         <div class="media-thumb">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#1A4FA0,#5CCB3B);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
-            <span style="font-size:48px;">🇻🇪</span>
-            <span style="color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;">Jacio Turaren</span>
+          <div class="media-bg" style="background:linear-gradient(135deg,#1A4FA0,#3CB54A)">
+            <span class="ico">🇻🇪</span><span class="lbl">JACIO TURAREN</span>
           </div>
-          <div class="media-play"><div class="play-btn"><div class="play-triangle"></div></div></div>
+          <div class="media-play-ov"><div class="play-circle"><div class="play-tri"></div></div></div>
         </div>
         <div class="media-body">
           <div class="media-tag">Liderazgo territorial</div>
           <div class="media-title">Jacio Turaren</div>
-          <p class="media-desc">Mensaje sobre la organización ciudadana y la reconstrucción democrática de Venezuela.</p>
+          <p class="media-desc">Mensaje sobre organización ciudadana y la reconstrucción democrática de Venezuela.</p>
         </div>
       </div>
-      <div class="media-card reveal reveal-delay-2" onclick="openVideo('https://github.com/jhonmalorne/Concertacion/blob/main/Dr.%20Nelson%20Chitty%20La%20Roche%20reordenamiento%20o%20mas%20de%20lo%20mismo.mp4?raw=true', 'Dr. Nelson Chitty La Roche')">
+      <!-- Video 5 -->
+      <div class="media-card reveal rd2" onclick="openVid('https://github.com/jhonmalorne/Concertacion/blob/main/Dr.%20Nelson%20Chitty%20La%20Roche%20reordenamiento%20o%20mas%20de%20lo%20mismo.mp4?raw=true')">
         <div class="media-thumb">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#0047AB,#003080);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
-            <span style="font-size:48px;">📚</span>
-            <span style="color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;">Dr. Nelson Chitty</span>
+          <div class="media-bg" style="background:linear-gradient(135deg,#0047AB,#003380)">
+            <span class="ico">📚</span><span class="lbl">DR. NELSON CHITTY</span>
           </div>
-          <div class="media-play"><div class="play-btn"><div class="play-triangle"></div></div></div>
+          <div class="media-play-ov"><div class="play-circle"><div class="play-tri"></div></div></div>
         </div>
         <div class="media-body">
           <div class="media-tag">Análisis político</div>
@@ -1515,18 +1107,18 @@ button { cursor: pointer; font-family: var(--font-body); border: none; outline: 
           <p class="media-desc">¿Reordenamiento o más de lo mismo? Análisis profundo sobre el futuro de Venezuela.</p>
         </div>
       </div>
-      <div class="media-card reveal reveal-delay-3" onclick="openVideo('https://github.com/jhonmalorne/Concertacion/blob/main/equipo%20de%20anzoategui.mp4?raw=true', 'Equipo Anzoátegui')">
+      <!-- Video 6 -->
+      <div class="media-card reveal rd3" onclick="openVid('https://github.com/jhonmalorne/Concertacion/blob/main/equipo%20de%20anzoategui.mp4?raw=true')">
         <div class="media-thumb">
-          <div style="width:100%;height:100%;background:linear-gradient(135deg,#3DA820,#5CCB3B);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
-            <span style="font-size:48px;">🌊</span>
-            <span style="color:rgba(255,255,255,0.8);font-size:13px;font-weight:600;">Anzoátegui</span>
+          <div class="media-bg" style="background:linear-gradient(135deg,#3DA820,#5CCB3B)">
+            <span class="ico">🌊</span><span class="lbl">ANZOÁTEGUI</span>
           </div>
-          <div class="media-play"><div class="play-btn"><div class="play-triangle"></div></div></div>
+          <div class="media-play-ov"><div class="play-circle"><div class="play-tri"></div></div></div>
         </div>
         <div class="media-body">
           <div class="media-tag">Estado Anzoátegui</div>
           <div class="media-title">Equipo Anzoátegui</div>
-          <p class="media-desc">El equipo regional de Anzoátegui en actividades de organización y movilización ciudadana.</p>
+          <p class="media-desc">Equipo regional de Anzoátegui en actividades de organización y movilización ciudadana.</p>
         </div>
       </div>
     </div>
@@ -1534,421 +1126,317 @@ button { cursor: pointer; font-family: var(--font-body); border: none; outline: 
 </section>
 
 <!-- VIDEO MODAL -->
-<div id="video-modal" role="dialog" aria-modal="true" aria-label="Reproductor de video">
-  <div class="modal-inner">
-    <button class="modal-close" onclick="closeVideo()" aria-label="Cerrar video">✕</button>
-    <div class="modal-video-wrap">
-      <video id="modal-video" controls playsinline></video>
+<div id="vmodal" role="dialog" aria-modal="true" aria-label="Reproductor de video">
+  <div class="vm-inner">
+    <button class="vm-close" onclick="closeVid()" aria-label="Cerrar video">✕</button>
+    <div class="vm-wrap">
+      <video id="mvid" controls playsinline></video>
     </div>
   </div>
 </div>
 
 <!-- DOCUMENTOS -->
-<section id="documentos" class="section" style="background:var(--gris-100)">
-  <div class="section-inner">
-    <div class="section-label reveal">Biblioteca institucional</div>
-    <h2 class="section-title reveal reveal-delay-1">Documentos y <span class="azul">formación</span></h2>
-    <p class="section-desc reveal reveal-delay-2">Accede a los documentos oficiales de Concertación Ciudadana. Formación política, plan organizativo y más recursos para militantes y coordinadores.</p>
-    <div class="docs-grid">
-      <div class="doc-card reveal reveal-delay-1">
-        <div class="doc-icon">📘</div>
+<section id="docs" class="sec">
+  <div class="sec-inner">
+    <div class="sec-tag reveal">Biblioteca institucional</div>
+    <h2 class="sec-h reveal rd1">Documentos y <span class="az">formación</span></h2>
+    <p class="sec-p reveal rd2">Accede a los documentos oficiales de Concertación Ciudadana. Formación política, plan organizativo y recursos para militantes y coordinadores.</p>
+    <div class="docs-g">
+      <div class="doc-card reveal rd1">
+        <div class="doc-ico">📘</div>
         <div class="doc-type">Documento Fundacional</div>
         <div class="doc-title">Guía de Concertación</div>
         <p class="doc-desc">La guía institucional del movimiento: simbología, ideario político, misión, visión, proyecto institucional y el decálogo del militante. La base de nuestra identidad política.</p>
-        <a class="doc-btn" href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/Guia.Concertaci%C3%B3n.pdf" target="_blank" rel="noopener">
-          Descargar PDF ↗
-        </a>
+        <a class="doc-btn" href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/Guia.Concertaci%C3%B3n.pdf" target="_blank" rel="noopener">Descargar PDF ↗</a>
       </div>
-      <div class="doc-card reveal reveal-delay-2">
-        <div class="doc-icon">🗂️</div>
+      <div class="doc-card reveal rd2">
+        <div class="doc-ico">🗂️</div>
         <div class="doc-type">Planificación Estratégica</div>
         <div class="doc-title">Plan Organizativo</div>
-        <p class="doc-desc">El plan estratégico de organización territorial de Concertación Ciudadana. Estructura, funciones, metodología de trabajo y objetivos por nivel organizativo.</p>
-        <a class="doc-btn" href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/PlanOrganizativo.pdf" target="_blank" rel="noopener">
-          Descargar PDF ↗
-        </a>
+        <p class="doc-desc">El plan estratégico de organización territorial de Concertación Ciudadana. Estructura, funciones, metodología de trabajo y objetivos por nivel organizativo nacional.</p>
+        <a class="doc-btn" href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/PlanOrganizativo.pdf" target="_blank" rel="noopener">Descargar PDF ↗</a>
       </div>
-      <div class="doc-card reveal reveal-delay-3">
-        <div class="doc-icon">📱</div>
+      <div class="doc-card reveal rd3">
+        <div class="doc-ico">📱</div>
         <div class="doc-type">Plataforma Digital</div>
         <div class="doc-title">Aplicativo de Registro</div>
-        <p class="doc-desc">Información completa sobre la implementación del aplicativo para registrarse en Concertación Ciudadana. Únete a la plataforma digital del movimiento.</p>
-        <a class="doc-btn" href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/Aplicaci%C3%B3nConcertaci%C3%B3n.pdf" target="_blank" rel="noopener">
-          Ver información ↗
-        </a>
+        <p class="doc-desc">Información completa sobre la implementación del aplicativo oficial para registrarse en Concertación Ciudadana y acceder a la plataforma digital del movimiento.</p>
+        <a class="doc-btn" href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/Aplicaci%C3%B3nConcertaci%C3%B3n.pdf" target="_blank" rel="noopener">Ver información ↗</a>
       </div>
-      <div class="doc-card reveal reveal-delay-4">
-        <div class="doc-icon">✅</div>
+      <div class="doc-card reveal rd4">
+        <div class="doc-ico">✅</div>
         <div class="doc-type">Registro oficial</div>
-        <div class="doc-title">Regístrate en Concertación</div>
-        <p class="doc-desc">Completa tu registro oficial en la plataforma digital de Concertación Ciudadana. Sé parte del movimiento que está reconstruyendo Venezuela desde las bases.</p>
-        <a class="doc-btn" style="background:var(--verde)" href="https://concertacion-ciudadana.online/registro" target="_blank" rel="noopener">
-          Registrarme ahora ↗
-        </a>
+        <div class="doc-title">Regístrate ahora</div>
+        <p class="doc-desc">Completa tu registro en la plataforma oficial de Concertación Ciudadana. Sé parte del movimiento que está reconstruyendo Venezuela desde sus comunidades.</p>
+        <a class="doc-btn verde" href="https://concertacion-ciudadana.online/registro" target="_blank" rel="noopener">Registrarme ↗</a>
       </div>
     </div>
   </div>
 </section>
 
 <!-- CTA FINAL -->
-<section id="cta-final">
+<section id="cta">
   <div class="cta-content">
-    <div class="section-label" style="color:rgba(255,255,255,0.6);justify-content:center;margin-bottom:16px">
-      <span style="display:block;width:24px;height:2px;background:var(--verde)"></span>
-      Únete al movimiento
-      <span style="display:block;width:24px;height:2px;background:var(--verde)"></span>
-    </div>
+    <img class="cta-logo" src="https://github.com/jhonmalorne/Concertacion/blob/main/logo%20concertacion%20sin%20fondo.png?raw=true" alt="Concertación Ciudadana">
     <h2 class="cta-h">El futuro de Venezuela<br>se construye hoy</h2>
-    <p class="cta-p">Tu comunidad te necesita. Únete a Concertación Ciudadana y sé parte del movimiento que está reconstruyendo Venezuela desde cada estado, municipio y parroquia.</p>
+    <p class="cta-p">Tu comunidad te necesita. Únete a Concertación Ciudadana y sé parte del movimiento que está trabajando por una Venezuela libre, ordenada y próspera.</p>
     <div class="cta-btns">
-      <a class="btn-cta-main" href="https://concertacion-ciudadana.online/registro" target="_blank">
-        ✦ Únete Ahora
-      </a>
-      <a class="btn-cta-ghost" href="https://whatsapp.com/channel/0029VbCf4Y25PO17BzacxG3Y" target="_blank">
-        📲 Canal WhatsApp
-      </a>
+      <a class="btn-cta-main" href="https://concertacion-ciudadana.online/registro" target="_blank" rel="noopener">✦ Únete Ahora</a>
+      <a class="btn-cta-ghost" href="https://whatsapp.com/channel/0029VbCf4Y25PO17BzacxG3Y" target="_blank" rel="noopener">📲 Canal WhatsApp</a>
     </div>
   </div>
 </section>
 
 <!-- FOOTER -->
 <footer id="footer">
-  <div class="footer-inner">
+  <div class="footer-in">
     <div class="footer-top">
-      <div class="footer-brand">
-        <div class="nav-logo" style="margin-bottom:16px">
-          <div class="nav-logo-bars">
-            <div class="nav-logo-bar nlb1"></div>
-            <div class="nav-logo-bar nlb2"></div>
-            <div class="nav-logo-bar nlb3"></div>
-          </div>
-          <span class="nav-logo-text" style="color:var(--blanco)">CONCERTACIÓN</span>
-        </div>
+      <div>
+        <img class="footer-brand-logo" src="https://github.com/jhonmalorne/Concertacion/blob/main/Logo%20de%20concertacion.png?raw=true" alt="Concertación">
         <p class="footer-brand-desc">Movimiento ciudadano venezolano liderado por el Dr. César Pérez Vivas. Hacia la libertad, el orden y el bienestar integral de Venezuela.</p>
       </div>
       <div class="footer-col">
         <h4>Movimiento</h4>
         <a href="#pilares">Nuestros Pilares</a>
-        <a href="#liderazgo">Liderazgos</a>
-        <a href="#organizacion">Organización</a>
-        <a href="#documentos">Guía Institucional</a>
+        <a href="#liderazgo">Liderazgo</a>
+        <a href="#org">Organización</a>
+        <a href="#docs">Guía Institucional</a>
       </div>
       <div class="footer-col">
         <h4>Acción</h4>
-        <a href="https://concertacion-ciudadana.online/registro" target="_blank">Registrarse</a>
-        <a href="https://whatsapp.com/channel/0029VbCf4Y25PO17BzacxG3Y" target="_blank">Canal WhatsApp</a>
-        <a href="#mapa-section">Mapa Venezuela</a>
-        <a href="#multimedia">Videos</a>
+        <a href="https://concertacion-ciudadana.online/registro" target="_blank" rel="noopener">Registrarse</a>
+        <a href="https://whatsapp.com/channel/0029VbCf4Y25PO17BzacxG3Y" target="_blank" rel="noopener">Canal WhatsApp</a>
+        <a href="#mapa-sec">Mapa Venezuela</a>
+        <a href="#multimedia">Multimedia</a>
       </div>
       <div class="footer-col">
         <h4>Documentos</h4>
-        <a href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/Guia.Concertaci%C3%B3n.pdf" target="_blank">Guía PDF</a>
-        <a href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/PlanOrganizativo.pdf" target="_blank">Plan Organizativo</a>
-        <a href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/Aplicaci%C3%B3nConcertaci%C3%B3n.pdf" target="_blank">Aplicativo</a>
+        <a href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/Guia.Concertaci%C3%B3n.pdf" target="_blank" rel="noopener">Guía PDF</a>
+        <a href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/PlanOrganizativo.pdf" target="_blank" rel="noopener">Plan Organizativo</a>
+        <a href="https://github.com/jhonmalorne/Concertacion/blob/dbfc849f06e149f01815e159688ffadbd016fea2/Aplicaci%C3%B3nConcertaci%C3%B3n.pdf" target="_blank" rel="noopener">Aplicativo</a>
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2025 <span class="footer-verde">Concertación Ciudadana</span> · Dr. César Pérez Vivas · Diputado Emérito · Ex Gobernador del Táchira</div>
-      <div class="footer-copy">"Orden para ser libres, unión para prosperar."</div>
+      <div class="footer-copy">© 2025 <span class="footer-vc">Concertación Ciudadana</span> · Dr. César Pérez Vivas · Diputado Emérito · Ex Gobernador del Táchira</div>
+      <div class="footer-slogan">"Orden para ser libres, unión para prosperar."</div>
     </div>
   </div>
 </footer>
 
-<!-- FLOATING ACTIONS -->
-<div id="floating-bar">
-  <a class="float-btn float-btn-wa" href="https://whatsapp.com/channel/0029VbCf4Y25PO17BzacxG3Y" target="_blank" title="WhatsApp" aria-label="Canal de WhatsApp de Concertación">
+<!-- FAB -->
+<div id="fab">
+  <a class="fab-btn" href="https://whatsapp.com/channel/0029VbCf4Y25PO17BzacxG3Y" target="_blank" rel="noopener" title="WhatsApp" aria-label="Canal de WhatsApp">
     <img src="https://github.com/jhonmalorne/Concertacion/blob/main/iconodewhatsapp.png?raw=true" alt="WhatsApp">
   </a>
-  <a class="float-btn" href="https://www.instagram.com/" target="_blank" title="Instagram" aria-label="Instagram de Concertación">
+  <a class="fab-btn" href="https://www.instagram.com/" target="_blank" rel="noopener" title="Instagram" aria-label="Instagram">
     <img src="https://github.com/jhonmalorne/Concertacion/blob/main/iconoinstagram.png?raw=true" alt="Instagram">
   </a>
-  <a class="float-btn" href="https://www.threads.net/" target="_blank" title="Threads" aria-label="Threads de Concertación">
+  <a class="fab-btn" href="https://www.threads.net/" target="_blank" rel="noopener" title="Threads" aria-label="Threads">
     <img src="https://github.com/jhonmalorne/Concertacion/blob/main/iconotreads.png?raw=true" alt="Threads">
   </a>
-  <a class="float-join" href="https://concertacion-ciudadana.online/registro" target="_blank">
-    <span>✦</span> ÚNETE
+  <a class="fab-btn" href="https://maps.google.com" target="_blank" rel="noopener" title="Maps" aria-label="Google Maps">
+    <img src="https://github.com/jhonmalorne/Concertacion/blob/main/iconomaps.png?raw=true" alt="Maps">
   </a>
+  <a class="fab-join" href="https://concertacion-ciudadana.online/registro" target="_blank" rel="noopener">✦ ÚNETE</a>
 </div>
 
 <script>
-// ==================== LOADER ====================
-window.addEventListener('load', () => {
-  setTimeout(() => {
-    document.getElementById('loader').classList.add('hidden');
-  }, 2000);
+/* ===== LOADER ===== */
+window.addEventListener('load',()=>{
+  setTimeout(()=>document.getElementById('loader').classList.add('out'),2100);
 });
 
-// ==================== NAVBAR ====================
-const navbar = document.getElementById('navbar');
-window.addEventListener('scroll', () => {
-  if (window.scrollY > 60) {
-    navbar.classList.remove('transparent');
-    navbar.classList.add('solid');
-  } else {
-    navbar.classList.remove('solid');
-    navbar.classList.add('transparent');
+/* ===== NAVBAR ===== */
+const nav=document.getElementById('nav');
+window.addEventListener('scroll',()=>{
+  nav.classList.toggle('solid',window.scrollY>60);
+  nav.classList.toggle('clear',window.scrollY<=60);
+},{passive:true});
+
+/* ===== MOBILE NAV ===== */
+function openMnav(){document.getElementById('mnav').classList.add('open');document.body.style.overflow='hidden'}
+function closeMnav(){document.getElementById('mnav').classList.remove('open');document.body.style.overflow=''}
+
+/* ===== PARTICLES ===== */
+(function(){
+  const c=document.getElementById('hptcl');
+  for(let i=0;i<16;i++){
+    const p=document.createElement('div');
+    p.className='ptcl';
+    const s=Math.random()*6+3;
+    p.style.cssText=`width:${s}px;height:${s}px;left:${Math.random()*100}%;`+
+      `animation-duration:${Math.random()*12+10}s;animation-delay:${Math.random()*10}s;`+
+      `opacity:${Math.random()*.5+.2}`;
+    c.appendChild(p);
   }
-});
+})();
 
-// ==================== MOBILE NAV ====================
-function openMobileNav() {
-  document.getElementById('mobile-nav').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeMobileNav() {
-  document.getElementById('mobile-nav').classList.remove('open');
-  document.body.style.overflow = '';
-}
+/* ===== REVEAL ===== */
+const ro=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis')});
+},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>ro.observe(el));
 
-// ==================== PARTICLES ====================
-function createParticles() {
-  const container = document.getElementById('hero-particles');
-  for (let i = 0; i < 18; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 6 + 3;
-    p.style.cssText = `
-      width: ${size}px; height: ${size}px;
-      left: ${Math.random() * 100}%;
-      animation-duration: ${Math.random() * 12 + 10}s;
-      animation-delay: ${Math.random() * 10}s;
-      opacity: ${Math.random() * 0.5 + 0.2};
-    `;
-    container.appendChild(p);
+/* ===== COUNTERS ===== */
+function animCnt(el){
+  const target=+el.dataset.t;
+  const dur=1800;const start=performance.now();
+  function step(now){
+    const p=Math.min((now-start)/dur,1);
+    const e=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(e*target).toLocaleString('es-VE');
+    if(p<1)requestAnimationFrame(step);
   }
+  requestAnimationFrame(step);
 }
-createParticles();
-
-// ==================== SCROLL REVEAL ====================
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
+const co=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.cnt').forEach(animCnt);
+      co.unobserve(e.target);
     }
   });
-}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+},{threshold:.3});
+document.querySelectorAll('.stats-inner,.counters-g').forEach(el=>co.observe(el));
 
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+/* ===== LEAFLET MAP ===== */
+const map=L.map('map',{center:[8.0,-66.5],zoom:6,zoomControl:true,scrollWheelZoom:true,attributionControl:false});
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
 
-// ==================== COUNTERS ====================
-function animateCounter(el) {
-  const target = parseInt(el.dataset.target);
-  const duration = 1800;
-  const start = performance.now();
-  function update(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased = 1 - Math.pow(1 - progress, 3);
-    el.textContent = Math.floor(eased * target).toLocaleString('es-VE');
-    if (progress < 1) requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
+const sSt={fillColor:'#0047AB',fillOpacity:.18,color:'#0047AB',weight:1.5,opacity:.7};
+const sHv={fillColor:'#0047AB',fillOpacity:.4,color:'#0047AB',weight:2.5,opacity:1};
+const sSel={fillColor:'#0047AB',fillOpacity:.6,color:'#003380',weight:3,opacity:1};
+const mSt={fillColor:'#5CCB3B',fillOpacity:.22,color:'#3DA820',weight:1,opacity:.8};
+const mHv={fillColor:'#5CCB3B',fillOpacity:.5,color:'#3DA820',weight:2,opacity:1};
+
+/* State data — municipios & parroquias counts */
+const stData={
+  'Amazonas':{m:7,p:28},'Anzoátegui':{m:21,p:81},'Apure':{m:7,p:29},
+  'Aragua':{m:18,p:103},'Barinas':{m:12,p:58},'Bolívar':{m:11,p:68},
+  'Carabobo':{m:14,p:110},'Cojedes':{m:9,p:37},'Delta Amacuro':{m:4,p:18},
+  'Distrito Capital':{m:1,p:22},'Falcón':{m:25,p:131},'Guárico':{m:15,p:78},
+  'La Guaira':{m:1,p:13},'Lara':{m:9,p:94},'Mérida':{m:23,p:102},
+  'Miranda':{m:21,p:130},'Monagas':{m:13,p:78},'Nueva Esparta':{m:11,p:58},
+  'Portuguesa':{m:14,p:81},'Sucre':{m:15,p:113},'Táchira':{m:29,p:163},
+  'Trujillo':{m:20,p:130},'Yaracuy':{m:14,p:78},'Zulia':{m:21,p:155}
+};
+
+let selState=null;
+let muniLayer=null;
+
+function closePanel(){
+  document.getElementById('mpanel').classList.remove('open');
+  if(selState){selState.setStyle(sSt);selState=null}
+  if(muniLayer){map.removeLayer(muniLayer);muniLayer=null}
+  map.setView([8.0,-66.5],6);
 }
-
-const counterObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.querySelectorAll('.counter').forEach(animateCounter);
-      counterObserver.unobserve(entry.target);
-    }
-  });
-}, { threshold: 0.3 });
-
-document.querySelectorAll('.stats-inner, .stats-counters').forEach(el => counterObserver.observe(el));
-
-// ==================== LEAFLET MAP ====================
-const map = L.map('map', {
-  center: [8.0, -66.5],
-  zoom: 6,
-  zoomControl: true,
-  scrollWheelZoom: true,
-  attributionControl: false
-});
-
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-  maxZoom: 19
-}).addTo(map);
-
-const stateStyle = {
-  fillColor: '#0047AB',
-  fillOpacity: 0.18,
-  color: '#0047AB',
-  weight: 1.5,
-  opacity: 0.7
-};
-
-const stateHoverStyle = {
-  fillColor: '#0047AB',
-  fillOpacity: 0.45,
-  color: '#0047AB',
-  weight: 2.5,
-  opacity: 1
-};
-
-const municipioStyle = {
-  fillColor: '#5CCB3B',
-  fillOpacity: 0.25,
-  color: '#3DA820',
-  weight: 1,
-  opacity: 0.8
-};
-
-const municipioHoverStyle = {
-  fillColor: '#5CCB3B',
-  fillOpacity: 0.55,
-  color: '#3DA820',
-  weight: 2,
-  opacity: 1
-};
-
-let municipiosLayer = null;
-let selectedState = null;
-
-const municipioData = {
-  'Amazonas': {mun: 7, lideres: 42}, 'Anzoátegui': {mun: 21, lideres: 95},
-  'Apure': {mun: 7, lideres: 38}, 'Aragua': {mun: 18, lideres: 112},
-  'Barinas': {mun: 12, lideres: 65}, 'Bolívar': {mun: 11, lideres: 78},
-  'Carabobo': {mun: 14, lideres: 140}, 'Cojedes': {mun: 9, lideres: 44},
-  'Delta Amacuro': {mun: 4, lideres: 22}, 'Distrito Capital': {mun: 1, lideres: 120},
-  'Falcón': {mun: 25, lideres: 88}, 'Guárico': {mun: 15, lideres: 60},
-  'La Guaira': {mun: 1, lideres: 30}, 'Lara': {mun: 9, lideres: 115},
-  'Mérida': {mun: 23, lideres: 85}, 'Miranda': {mun: 21, lideres: 180},
-  'Monagas': {mun: 13, lideres: 70}, 'Nueva Esparta': {mun: 11, lideres: 55},
-  'Portuguesa': {mun: 14, lideres: 62}, 'Sucre': {mun: 15, lideres: 74},
-  'Táchira': {mun: 29, lideres: 130}, 'Trujillo': {mun: 20, lideres: 72},
-  'Yaracuy': {mun: 14, lideres: 58}, 'Zulia': {mun: 21, lideres: 165}
-};
 
 fetch('https://raw.githubusercontent.com/jhonmalorne/Concertacion/refs/heads/main/geoBoundaries-VEN-ADM1_simplified.geojson')
-  .then(r => r.json())
-  .then(data => {
-    L.geoJSON(data, {
-      style: stateStyle,
-      onEachFeature: (feature, layer) => {
-        const name = feature.properties.shapeName || feature.properties.NAME_1 || 'Estado';
+  .then(r=>r.json())
+  .then(data=>{
+    L.geoJSON(data,{
+      style:sSt,
+      onEachFeature:(f,layer)=>{
+        const name=f.properties.shapeName||f.properties.NAME_1||'Estado';
+        layer.on({
+          mouseover(e){
+            if(layer!==selState)layer.setStyle(sHv);
+            L.popup({closeButton:false,offset:[0,-4]})
+              .setLatLng(e.latlng)
+              .setContent(`<div class="cpop"><div class="cpop-name">${name}</div><div class="cpop-tag">Haz clic para explorar</div></div>`)
+              .openOn(map);
+          },
+          mouseout(){
+            if(layer!==selState)layer.setStyle(sSt);
+            map.closePopup();
+          },
+          click(){
+            if(selState)selState.setStyle(sSt);
+            layer.setStyle(sSel);
+            selState=layer;
+            map.flyToBounds(layer.getBounds(),{padding:[40,40],maxZoom:9,duration:.9});
+            map.closePopup();
 
-        layer.on('mouseover', function(e) {
-          if (this !== selectedState) this.setStyle(stateHoverStyle);
-          L.popup({ closeButton: false, offset: [0, -4] })
-            .setLatLng(e.latlng)
-            .setContent(`<div class="custom-popup"><div class="cp-title">${name}</div><div class="cp-tag">Haz clic para explorar</div></div>`)
-            .openOn(map);
-        });
+            const d=stData[name]||{m:'—',p:'—'};
+            document.getElementById('mp-name').textContent=name;
+            document.getElementById('mp-mun').textContent=d.m;
+            document.getElementById('mp-par').textContent=d.p;
+            document.getElementById('mpanel').classList.add('open');
 
-        layer.on('mouseout', function() {
-          if (this !== selectedState) this.setStyle(stateStyle);
-          map.closePopup();
-        });
-
-        layer.on('click', function(e) {
-          if (selectedState) selectedState.setStyle(stateStyle);
-          this.setStyle({ fillColor: '#0047AB', fillOpacity: 0.6, color: '#003080', weight: 3 });
-          selectedState = this;
-
-          const bounds = layer.getBounds();
-          map.flyToBounds(bounds, { padding: [40, 40], maxZoom: 9, duration: 1 });
-
-          const info = municipioData[name] || { mun: '—', lideres: '—' };
-          document.getElementById('mip-estado-name').textContent = name;
-          document.getElementById('mip-estado-region').textContent = 'Estado de Venezuela';
-          document.getElementById('mip-municipios').textContent = info.mun;
-          document.getElementById('mip-lideres').textContent = info.lideres + (info.lideres !== '—' ? '+' : '');
-          document.getElementById('map-info').classList.add('open');
-
-          loadMunicipios(name);
-          map.closePopup();
+            // Load municipios
+            if(muniLayer){map.removeLayer(muniLayer);muniLayer=null}
+            fetch('https://raw.githubusercontent.com/jhonmalorne/Concertacion/refs/heads/main/geoBoundaries-VEN-ADM2_simplified.geojson')
+              .then(r=>r.json())
+              .then(md=>{
+                const filtered={...md,features:md.features.filter(mf=>{
+                  const sp=mf.properties.shapeName||'';
+                  const n1=mf.properties.NAME_1||'';
+                  const h1=mf.properties.HASC_1||'';
+                  return sp.includes(name)||n1===name||h1.includes(name.substring(0,3).toUpperCase());
+                })};
+                const src=filtered.features.length>0?filtered:md;
+                muniLayer=L.geoJSON(src,{
+                  style:mSt,
+                  onEachFeature:(mf,ml)=>{
+                    const mn=mf.properties.shapeName||mf.properties.NAME_2||'Municipio';
+                    ml.on({
+                      mouseover(e){
+                        ml.setStyle(mHv);
+                        L.popup({closeButton:false,offset:[0,-4]})
+                          .setLatLng(e.latlng)
+                          .setContent(`<div class="cpop"><div class="cpop-name">${mn}</div><div class="cpop-tag">Municipio</div><p class="cpop-p">Concertación trabaja por el bienestar de este municipio.</p></div>`)
+                          .openOn(map);
+                      },
+                      mouseout(){ml.setStyle(mSt);map.closePopup()}
+                    });
+                  }
+                }).addTo(map);
+              }).catch(()=>{});
+          }
         });
       }
     }).addTo(map);
-  })
-  .catch(err => console.warn('GeoJSON estados no disponible:', err));
+  }).catch(()=>{});
 
-function loadMunicipios(estadoName) {
-  if (municipiosLayer) { map.removeLayer(municipiosLayer); municipiosLayer = null; }
-
-  fetch('https://raw.githubusercontent.com/jhonmalorne/Concertacion/refs/heads/main/geoBoundaries-VEN-ADM2_simplified.geojson')
-    .then(r => r.json())
-    .then(data => {
-      const filtered = { ...data, features: data.features.filter(f => {
-        const props = f.properties;
-        return (props.shapeName || '').includes(estadoName) ||
-               (props.NAME_1 || '') === estadoName ||
-               (props.HASC_1 || '').includes(estadoName.substring(0, 3).toUpperCase());
-      })};
-
-      if (filtered.features.length === 0) {
-        filtered.features = data.features.filter(f => {
-          const n = f.properties.shapeName || f.properties.NAME_2 || '';
-          return true;
-        }).slice(0, 30);
-      }
-
-      municipiosLayer = L.geoJSON(filtered, {
-        style: municipioStyle,
-        onEachFeature: (feature, layer) => {
-          const mname = feature.properties.shapeName || feature.properties.NAME_2 || 'Municipio';
-          layer.on('mouseover', function(e) {
-            this.setStyle(municipioHoverStyle);
-            L.popup({ closeButton: false, offset: [0, -4] })
-              .setLatLng(e.latlng)
-              .setContent(`<div class="custom-popup"><div class="cp-title">${mname}</div><div class="cp-tag">Municipio activo</div><p class="cp-p">Concertación organizada y en acción.</p></div>`)
-              .openOn(map);
-          });
-          layer.on('mouseout', function() {
-            this.setStyle(municipioStyle);
-            map.closePopup();
-          });
-        }
-      }).addTo(map);
-    })
-    .catch(err => console.warn('GeoJSON municipios no disponible:', err));
+/* ===== VIDEO MODAL ===== */
+function openVid(src){
+  document.getElementById('mvid').src=src;
+  document.getElementById('vmodal').classList.add('open');
+  document.body.style.overflow='hidden';
 }
-
-// ==================== VIDEO MODAL ====================
-function openVideo(src, title) {
-  const modal = document.getElementById('video-modal');
-  const video = document.getElementById('modal-video');
-  video.src = src;
-  modal.classList.add('open');
-  document.body.style.overflow = 'hidden';
+function closeVid(){
+  const m=document.getElementById('vmodal');
+  const v=document.getElementById('mvid');
+  m.classList.remove('open');
+  v.pause();v.src='';
+  document.body.style.overflow='';
 }
+document.getElementById('vmodal').addEventListener('click',function(e){if(e.target===this)closeVid()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeVid();closeMnav()}});
 
-function closeVideo() {
-  const modal = document.getElementById('video-modal');
-  const video = document.getElementById('modal-video');
-  modal.classList.remove('open');
-  video.pause();
-  video.src = '';
-  document.body.style.overflow = '';
-}
-
-document.getElementById('video-modal').addEventListener('click', function(e) {
-  if (e.target === this) closeVideo();
-});
-
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeVideo(); });
-
-// ==================== AUDIO ====================
-let audioPlaying = false;
-const jingle = document.getElementById('jingle');
-
-function toggleAudio() {
-  if (audioPlaying) {
-    jingle.pause();
-    document.getElementById('audio-waves').classList.add('paused');
-    document.getElementById('audio-label').textContent = 'Escuchar Jingle';
-    audioPlaying = false;
+/* ===== JINGLE ===== */
+let jPlaying=false;
+const jAudio=document.getElementById('jingle');
+function toggleJingle(){
+  if(jPlaying){
+    jAudio.pause();
+    document.getElementById('jwaves').classList.add('paused');
+    document.getElementById('jlbl').textContent='Escuchar Jingle';
+    document.getElementById('jdisc').classList.remove('spinning');
+    jPlaying=false;
   } else {
-    jingle.play().catch(() => {});
-    document.getElementById('audio-waves').classList.remove('paused');
-    document.getElementById('audio-label').textContent = 'Pausar Jingle';
-    audioPlaying = true;
+    jAudio.play().catch(()=>{});
+    document.getElementById('jwaves').classList.remove('paused');
+    document.getElementById('jlbl').textContent='Pausar Jingle';
+    document.getElementById('jdisc').classList.add('spinning');
+    jPlaying=true;
   }
 }
-jingle.addEventListener('ended', () => {
-  audioPlaying = false;
-  document.getElementById('audio-waves').classList.add('paused');
-  document.getElementById('audio-label').textContent = 'Escuchar Jingle';
+jAudio.addEventListener('ended',()=>{
+  jPlaying=false;
+  document.getElementById('jwaves').classList.add('paused');
+  document.getElementById('jlbl').textContent='Escuchar Jingle';
+  document.getElementById('jdisc').classList.remove('spinning');
 });
 </script>
 </body>
